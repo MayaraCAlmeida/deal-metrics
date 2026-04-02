@@ -12,9 +12,9 @@
 
 | Formulário | Resultado | Comparativo |
 |---|---|---|
-| ![Formulário](screenshots/screenshot-calcular.png) | ![Resultado](screenshots/screenshot-calcular2.png) | ![Comparativo](screenshots/screenshot-calcular3.png) |
+| ![Formulário](screenshots/screenshot-calcular.png) | ![Resultado](screenshots/screenshot-calcular2.png) | ![Promoções](screenshots/screenshot-calcular3.png) |
 
-**Promoções sugeridas:**
+**Minhas Promoções:**
 
 ![Promoções](screenshots/screenshot-calcular4.png)
 
@@ -22,13 +22,13 @@
 
 ![Produtos](screenshots/screenshot-produtos.png)
 
-**Importação em lote:**
+**Importação:**
 
 ![Importar](screenshots/screenshot-importar.png)
 
 **Relatório PDF exportado:**
 
-| Tabela de produtos | Promoções por produto |
+| Tabela de produtos e promoções| Minhas promoções por produto |
 |---|---|
 | ![PDF tabela](screenshots/screenshot-pdf.png) | ![PDF promoções](screenshots/screenshot-pdf2.png) |
 

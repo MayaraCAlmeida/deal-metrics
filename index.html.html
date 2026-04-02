@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DealMetrics — Inteligência de Preços</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">  }
+</script>
+<style>
+  :root {
+    --verde: #00C97B;
+    --verde-dark: #00a363;
+    --vermelho: #FF4B4B;
+    --amarelo: #FFD23F;
+    --azul: #1A73E8;
+    --roxo: #A78BFA;
+    --bg: #0D0F14;
+    --surface: #161921;
+    --surface2: #1E2230;
+    --border: rgba(255,255,255,0.07);
+    --text: #F0F2F7;
+    --muted: #7A8099;
+    --font-display: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font-body); min-height: 100vh; overflow-x: hidden; }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 0; opacity: 0.4;
+  }
+  .app { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; padding: 0 0 60px; }
+
+  header { padding: 28px 20px 20px; display: flex; align-items: center; justify-content: space-between; }
+  .logo { font-family: var(--font-display); font-weight: 800; font-size: 1.3rem; letter-spacing: -0.5px; }
+  .logo span { color: var(--verde); }
+  .badge { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-size: 0.7rem; color: var(--muted); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 1px; }
+
+  .tabs { display: flex; gap: 6px; padding: 0 20px; margin-bottom: 24px; }
+  .tab { flex: 1; padding: 10px 8px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; color: var(--muted); font-family: var(--font-body); font-size: 0.78rem; font-weight: 500; cursor: pointer; transition: all 0.2s; text-align: center; }
+  .tab.active { background: var(--verde); border-color: var(--verde); color: #000; font-weight: 700; }
+
+  .panel { display: none; padding: 0 20px; animation: fadeUp 0.3s ease; }
+  .panel.active { display: block; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 18px; margin-bottom: 14px; }
+  .card-title { font-family: var(--font-display); font-weight: 700; font-size: 0.85rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .card-title .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--verde); flex-shrink: 0; }
+
+  label { display: block; font-size: 0.78rem; color: var(--muted); margin-bottom: 5px; font-weight: 500; }
+  input[type="text"], input[type="number"], select { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 11px 14px; color: var(--text); font-family: var(--font-mono); font-size: 0.95rem; margin-bottom: 12px; transition: border-color 0.2s; -webkit-appearance: none; }
+  input:focus, select:focus { outline: none; border-color: var(--verde); }
+  input::placeholder { color: var(--muted); opacity: 0.6; }
+
+  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .btn-primary { width: 100%; padding: 14px; background: var(--verde); border: none; border-radius: 12px; color: #000; font-family: var(--font-display); font-size: 0.95rem; font-weight: 800; cursor: pointer; transition: all 0.2s; letter-spacing: 0.3px; }
+  .btn-primary:hover { background: var(--verde-dark); transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-secondary { width: 100%; padding: 11px; background: transparent; border: 1px solid var(--border); border-radius: 10px; color: var(--muted); font-family: var(--font-body); font-size: 0.85rem; cursor: pointer; transition: all 0.2s; margin-top: 6px; }
+  .btn-secondary:hover { border-color: var(--verde); color: var(--verde); }
+
+  .btn-pdf { width: 100%; padding: 12px; background: transparent; border: 1px solid rgba(167,139,250,0.4); border-radius: 10px; color: var(--roxo); font-family: var(--font-display); font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: all 0.2s; margin-bottom: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .btn-pdf:hover { background: rgba(167,139,250,0.1); border-color: var(--roxo); }
+
+  .result-section { margin-top: 20px; }
+  .result-header { font-family: var(--font-display); font-weight: 800; font-size: 1.1rem; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .result-header .med-name { color: var(--verde); font-size: 1.15rem; }
+
+  .metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  .metric-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+  .metric { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px; }
+  .metric.highlight { border-color: rgba(0,201,123,0.3); background: rgba(0,201,123,0.06); }
+  .metric.danger { border-color: rgba(255,75,75,0.3); background: rgba(255,75,75,0.06); }
+  .metric.warn { border-color: rgba(255,210,63,0.3); background: rgba(255,210,63,0.06); }
+  .metric.purple { border-color: rgba(167,139,250,0.3); background: rgba(167,139,250,0.06); }
+  .metric-label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 500; margin-bottom: 5px; }
+  .metric-value { font-family: var(--font-mono); font-size: 1.2rem; font-weight: 500; color: var(--text); }
+  .metric.highlight .metric-value { color: var(--verde); }
+  .metric.danger .metric-value { color: var(--vermelho); }
+  .metric.warn .metric-value { color: var(--amarelo); }
+  .metric.purple .metric-value { color: var(--roxo); }
+  .metric-sub { font-size: 0.68rem; color: var(--muted); margin-top: 2px; }
+
+  .promos-title { font-family: var(--font-display); font-size: 0.8rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; margin-top: 4px; }
+  .promo-list { display: flex; flex-direction: column; gap: 8px; }
+  .promo-item { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; transition: all 0.2s; }
+  .promo-item:hover { border-color: var(--verde); }
+  .promo-left { display: flex; flex-direction: column; gap: 3px; }
+  .promo-tag { font-family: var(--font-mono); font-size: 1rem; font-weight: 500; color: var(--amarelo); }
+  .promo-ticket { font-size: 0.68rem; color: var(--muted); }
+  .promo-detail { text-align: right; }
+  .promo-price { font-family: var(--font-mono); font-size: 0.9rem; color: var(--text); }
+  .promo-margin { font-size: 0.68rem; color: var(--muted); margin-top: 1px; }
+  .promo-status { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 3px; }
+  .ok { background: rgba(0,201,123,0.15); color: var(--verde); }
+  .atencao { background: rgba(255,210,63,0.15); color: var(--amarelo); }
+  .risco { background: rgba(255,75,75,0.15); color: var(--vermelho); }
+
+  .compare-bar { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 10px; }
+  .compare-label { font-size: 0.72rem; color: var(--muted); margin-bottom: 8px; display: flex; justify-content: space-between; }
+  .bar-track { height: 8px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px; transition: width 0.6s cubic-bezier(0.34,1.56,0.64,1); }
+  .bar-fill.green { background: var(--verde); }
+  .bar-fill.red { background: var(--vermelho); }
+  .bar-fill.yellow { background: var(--amarelo); }
+
+  .med-list { display: flex; flex-direction: column; gap: 8px; }
+  .med-item { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px; display: flex; align-items: center; justify-content: space-between; transition: all 0.2s; }
+  .med-item:hover { border-color: rgba(0,201,123,0.4); }
+  .med-info .med-nome { font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; }
+  .med-info .med-meta { font-size: 0.72rem; color: var(--muted); margin-top: 2px; font-family: var(--font-mono); }
+  .med-prices { text-align: right; }
+  .med-custo { font-family: var(--font-mono); font-size: 0.85rem; color: var(--muted); }
+  .med-concorrente { font-family: var(--font-mono); font-size: 0.82rem; margin-top: 2px; }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; margin-left: 8px; flex-shrink: 0; }
+
+  .upload-area { border: 2px dashed var(--border); border-radius: 16px; padding: 32px 20px; text-align: center; cursor: pointer; transition: all 0.2s; margin-bottom: 14px; }
+  .upload-area:hover { border-color: var(--verde); background: rgba(0,201,123,0.04); }
+  .upload-icon { font-size: 2rem; margin-bottom: 10px; }
+  .upload-text { font-size: 0.85rem; color: var(--muted); line-height: 1.5; }
+  .upload-text strong { color: var(--text); }
+
+  .tip { background: rgba(26,115,232,0.1); border: 1px solid rgba(26,115,232,0.2); border-radius: 10px; padding: 10px 14px; font-size: 0.75rem; color: #7eb3f5; line-height: 1.5; margin-bottom: 12px; }
+  .recycle-notice { background: rgba(255,210,63,0.07); border: 1px solid rgba(255,210,63,0.2); border-radius: 10px; padding: 8px 12px; font-size: 0.7rem; color: var(--amarelo); margin-bottom: 12px; }
+
+  .empty { text-align: center; padding: 40px 20px; color: var(--muted); }
+  .empty-icon { font-size: 2.5rem; margin-bottom: 10px; opacity: 0.5; }
+  .empty-text { font-size: 0.85rem; line-height: 1.5; }
+
+  .divider { height: 1px; background: var(--border); margin: 16px 0; }
+  .hidden { display: none !important; }
+  #fileInput { display: none; }
+
+  footer { text-align: right; padding: 16px 24px 24px; font-size: 0.68rem; color: var(--muted); opacity: 0.45; font-family: var(--font-body); position: relative; z-index: 1; }
+
+  select option { background: #1E2230; }
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 2px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="logo">Deal<span>Metrics</span></div>
+    <div class="badge">v3.0</div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('calcular')">🧮 Calcular</button>
+    <button class="tab" onclick="switchTab('lista')">📋 Produtos</button>
+    <button class="tab" onclick="switchTab('importar')">📂 Importar</button>
+  </div>
+
+  <!-- CALCULAR -->
+  <div class="panel active" id="panel-calcular">
+    <div class="card">
+      <div class="card-title"><span class="dot"></span> Dados do Produto</div>
+      <label>Nome do medicamento</label>
+      <input type="text" id="nomeMed" placeholder="Ex: Losartana 50mg">
+      <label>Meu custo (R$)</label>
+      <input type="number" id="custo" placeholder="0,00" step="0.01" min="0">
+
+      <label>Meu preço de venda (R$) <span style="color:var(--muted);font-weight:400;">(opcional)</span></label>
+      <input type="number" id="meuPrecoVenda" placeholder="0,00" step="0.01" min="0">
+
+      <label>Margem mínima desejada (%)</label>
+      <input type="number" id="margemMin" placeholder="Ex: 15" value="15" min="0" max="100">
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;margin-top:4px;">
+        <label style="margin-bottom:0;">Concorrentes</label>
+        <button type="button" onclick="adicionarConcorrente()" style="background:rgba(0,201,123,0.12);border:1px solid rgba(0,201,123,0.35);border-radius:8px;color:var(--verde);font-size:0.75rem;font-weight:700;padding:4px 12px;cursor:pointer;font-family:var(--font-display);transition:all 0.2s;" onmouseover="this.style.background='rgba(0,201,123,0.22)'" onmouseout="this.style.background='rgba(0,201,123,0.12)'">+ Adicionar</button>
+      </div>
+      <div id="concorrentesLista"></div>
+    </div>
+    <button class="btn-primary" onclick="calcular()">⚡ Calcular Estratégia</button>
+    <div id="resultado" class="result-section hidden"></div>
+  </div>
+
+  <!-- LISTA -->
+  <div class="panel" id="panel-lista">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:0 0 12px;">
+      <div style="font-size:0.8rem;color:var(--muted);font-family:var(--font-display);font-weight:700;text-transform:uppercase;letter-spacing:1px;display:flex;align-items:center;gap:8px;">
+        <span style="width:6px;height:6px;border-radius:50%;background:var(--verde);display:inline-block;"></span>
+        Produtos cadastrados
+      </div>
+      <button onclick="apagarTudo()" style="background:transparent;border:1px solid rgba(255,75,75,0.3);border-radius:8px;color:var(--vermelho);font-size:0.72rem;padding:5px 10px;cursor:pointer;font-family:var(--font-body);transition:all 0.2s;" onmouseover="this.style.background='rgba(255,75,75,0.1)'" onmouseout="this.style.background='transparent'">🗑 Limpar tudo</button>
+    </div>
+    <div class="recycle-notice">♻️ Registros com mais de 30 dias são removidos automaticamente</div>
+    <button class="btn-pdf" onclick="gerarPDF()">📄 Exportar relatório em PDF</button>
+    <div id="listaMeds" class="med-list"></div>
+  </div>
+
+  <!-- IMPORTAR -->
+  <div class="panel" id="panel-importar">
+    <div class="tip">
+      📎 Importe uma planilha do Excel ou CSV — o app reconhece automaticamente as colunas, não precisa nome exato!
+    </div>
+    <button onclick="baixarModelo()" style="width:100%;padding:11px;background:rgba(0,201,123,0.12);border:1px solid rgba(0,201,123,0.35);border-radius:10px;color:var(--verde);font-family:var(--font-display);font-size:0.88rem;font-weight:700;cursor:pointer;transition:all 0.2s;margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:8px;" onmouseover="this.style.background='rgba(0,201,123,0.22)'" onmouseout="this.style.background='rgba(0,201,123,0.12)'">⬇️ Baixar planilha modelo (.xlsx)</button>
+
+    <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+      <div class="upload-icon">📄</div>
+      <div class="upload-text"><strong>Clique para selecionar arquivo</strong><br>Suporte: .csv — até 5MB</div>
+    </div>
+    <input type="file" id="fileInput" accept=".csv" onchange="importarCSV(event)">
+    <div class="card">
+      <div class="card-title"><span class="dot"></span> Como montar sua planilha</div>
+      <div style="font-size:0.78rem;color:var(--muted);line-height:1.7;margin-bottom:10px;">
+        Crie uma planilha com essas colunas — pode usar qualquer nome parecido:
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px;">
+        <div style="background:var(--surface2);border-radius:8px;padding:8px 10px;">
+          <div style="font-size:0.65rem;color:var(--verde);font-weight:700;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:3px;">Produto</div>
+          <div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--muted);">nome, produto, medicamento...</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:8px;padding:8px 10px;">
+          <div style="font-size:0.65rem;color:var(--verde);font-weight:700;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:3px;">Meu custo</div>
+          <div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--muted);">custo, meu preco, preco compra...</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:8px;padding:8px 10px;">
+          <div style="font-size:0.65rem;color:var(--amarelo);font-weight:700;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:3px;">Preço concorrente</div>
+          <div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--muted);">concorrente, preco conc, deles...</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:8px;padding:8px 10px;">
+          <div style="font-size:0.65rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:3px;">Nome concorrente <span style="font-weight:400;">(opcional)</span></div>
+          <div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--muted);">farmacia, loja, concorrente...</div>
+        </div>
+      </div>
+      <div style="font-size:0.72rem;color:var(--muted);margin-bottom:6px;font-weight:600;">Exemplo:</div>
+      <div style="font-family:var(--font-mono);font-size:0.70rem;color:var(--muted);line-height:1.9;background:var(--surface2);border-radius:8px;padding:10px;">
+        produto,custo,concorrente,farmacia<br>
+        Losartana 50mg,3.20,5.99,Ultrafarma<br>
+        Metformina 500mg,4.10,7.50,Drogasil<br>
+        Atorvastatina 20mg,8.00,14.00,Droga Raia
+      </div>
+    </div>
+    <div id="importResult" class="hidden"></div>
+  </div>
+</div>
+
+<footer>Mayara Almeida</footer>
+
+<script>
+  const STORAGE_KEY = 'dealMetricsProdutos';
+  const EXPIRY_MS = 30 * 24 * 60 * 60 * 1000;
+
+  function recycle(list) {
+    const now = Date.now();
+    return list.filter(p => !p.timestamp || (now - p.timestamp) < EXPIRY_MS);
+  }
+
+  let produtos = recycle(JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'));
+  save();
+
+  function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(produtos)); }
+
+  function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    const tabs = ['calcular','lista','importar'];
+    document.querySelectorAll('.tab')[tabs.indexOf(tab)].classList.add('active');
+    document.getElementById('panel-' + tab).classList.add('active');
+    if (tab === 'lista') renderLista();
+  }
+
+  function fmt(v) { return 'R$ ' + parseFloat(v).toFixed(2).replace('.', ','); }
+
+  // ── GERENCIAMENTO DE CONCORRENTES ──
+  let _concorrentes = [{ nome: '', preco: '' }];
+
+  function renderConcorrentes() {
+    const lista = document.getElementById('concorrentesLista');
+    if (!lista) return;
+    lista.innerHTML = _concorrentes.map((c, i) => `
+      <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-bottom:8px;align-items:start;">
+        <div>
+          ${i === 0 ? '<label style="font-size:0.7rem;color:var(--muted);">Nome</label>' : ''}
+          <input type="text" placeholder="Ex: Drogasil" value="${c.nome}"
+            oninput="_concorrentes[${i}].nome=this.value"
+            style="margin-bottom:0;${i>0?'margin-top:0;':''}">
+        </div>
+        <div>
+          ${i === 0 ? '<label style="font-size:0.7rem;color:var(--muted);">Preço (R$)</label>' : ''}
+          <input type="number" placeholder="0,00" step="0.01" min="0" value="${c.preco}"
+            oninput="_concorrentes[${i}].preco=this.value"
+            style="margin-bottom:0;">
+        </div>
+        <div style="${i===0?'padding-top:20px;':''}">
+          ${_concorrentes.length > 1
+            ? `<button type="button" onclick="removerConcorrente(${i})" style="background:rgba(255,75,75,0.1);border:1px solid rgba(255,75,75,0.25);border-radius:8px;color:var(--vermelho);font-size:0.8rem;padding:9px 10px;cursor:pointer;line-height:1;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,75,75,0.22)'" onmouseout="this.style.background='rgba(255,75,75,0.1)'">✕</button>`
+            : '<div style="width:34px;"></div>'}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function adicionarConcorrente() {
+    _concorrentes.push({ nome: '', preco: '' });
+    renderConcorrentes();
+  }
+
+  function removerConcorrente(i) {
+    _concorrentes.splice(i, 1);
+    renderConcorrentes();
+  }
+
+  // Inicializa concorrentes ao carregar
+  document.addEventListener('DOMContentLoaded', renderConcorrentes);
+  renderConcorrentes();
+
+  function calcular() {
+    const nome = document.getElementById('nomeMed').value.trim();
+    const custo = parseFloat(document.getElementById('custo').value);
+    const meuPrecoVendaInput = parseFloat(document.getElementById('meuPrecoVenda').value);
+    const margemMin = parseFloat(document.getElementById('margemMin').value) || 15;
+
+    if (!nome) { alert('Informe o nome do medicamento.'); return; }
+    if (!custo || custo <= 0) { alert('Informe o preço de custo.'); return; }
+
+    // Filtra concorrentes válidos
+    const concsValidos = _concorrentes.filter(c => c.preco && parseFloat(c.preco) > 0);
+    if (concsValidos.length === 0) { alert('Informe o preço de pelo menos um concorrente.'); return; }
+    const concs = concsValidos.map(c => ({ nome: c.nome.trim() || 'Concorrente', preco: parseFloat(c.preco) }));
+
+    const precoMinimo = custo * (1 + margemMin / 100);
+    const menorConc = Math.min(...concs.map(c => c.preco));
+    const maiorConc = Math.max(...concs.map(c => c.preco));
+    const mediaConc = concs.reduce((a, c) => a + c.preco, 0) / concs.length;
+
+    // Preço sugerido = 5% abaixo do mais barato, respeitando mínimo
+    const precoSugeridoVenda = Math.max(precoMinimo, arredondarBonito(menorConc * 0.95));
+    const lucroUnitario = precoSugeridoVenda - custo;
+    const lucroUnitarioPct = (lucroUnitario / precoSugeridoVenda * 100);
+    const margemSugerida = ((mediaConc - custo) / mediaConc * 100) * 0.85;
+    const promos = gerarPromos(custo, menorConc, margemMin);
+    const ticketPromos = promos.length > 0 ? promos.reduce((a, p) => a + p.precoTotal / p.qtd, 0) / promos.length : 0;
+
+    // Meu preço de venda (se informado)
+    const meuPrecoVenda = (!isNaN(meuPrecoVendaInput) && meuPrecoVendaInput > 0) ? meuPrecoVendaInput : precoSugeridoVenda;
+    const meuLucro = meuPrecoVenda - custo;
+    const meuLucroPct = (meuLucro / meuPrecoVenda * 100);
+
+    // Salvar produto (usa menor concorrente como referência)
+    const nomeConcorrente = concs.length === 1 ? concs[0].nome : `${concs.length} concorrentes`;
+    const prod = { nome, custo, concorrente: menorConc, nomeConcorrente, margemMin, data: new Date().toLocaleDateString('pt-BR'), timestamp: Date.now() };
+    const idx = produtos.findIndex(p => p.nome.toLowerCase() === nome.toLowerCase());
+    if (idx >= 0) produtos[idx] = prod; else produtos.push(prod);
+    save();
+
+    // ── CARDS DE PREÇOS LADO A LADO ──
+    // Determina quantas colunas: eu + concorrentes (máx visual = 4 por linha)
+    const allPrices = [
+      { label: 'Meu custo', price: custo, sub: 'custo de compra', type: 'custo' },
+      ...((!isNaN(meuPrecoVendaInput) && meuPrecoVendaInput > 0) ? [{ label: 'Meu preço', price: meuPrecoVenda, sub: `lucro ${fmt(meuLucro)} · ${meuLucroPct.toFixed(1)}%`, type: 'meu' }] : []),
+      ...concs.map(c => ({ label: c.nome, price: c.preco, sub: 'preço deles', type: 'conc' }))
+    ];
+
+    const menorPrecoGeral = Math.min(...allPrices.map(p => p.price));
+
+    function cardBg(p) {
+      if (p.type === 'custo') return 'background:var(--surface);border:1px solid var(--border);';
+      if (p.type === 'meu') return 'background:rgba(0,201,123,0.08);border:1px solid rgba(0,201,123,0.35);';
+      if (p.price === menorPrecoGeral && p.type === 'conc') return 'background:rgba(255,75,75,0.07);border:1px solid rgba(255,75,75,0.3);';
+      return 'background:rgba(255,210,63,0.06);border:1px solid rgba(255,210,63,0.25);';
+    }
+    function cardValorCor(p) {
+      if (p.type === 'custo') return 'color:var(--text);';
+      if (p.type === 'meu') return 'color:var(--verde);';
+      if (p.price === menorPrecoGeral && p.type === 'conc') return 'color:var(--vermelho);';
+      return 'color:var(--amarelo);';
+    }
+    function cardBadge(p) {
+      if (p.type === 'meu' && meuPrecoVenda <= menorConc) return '<div style="font-size:0.6rem;font-weight:700;color:var(--verde);text-transform:uppercase;letter-spacing:0.5px;margin-top:3px;">✓ mais barato</div>';
+      if (p.type === 'conc' && p.price === menorPrecoGeral && concs.length > 1) return '<div style="font-size:0.6rem;font-weight:700;color:var(--vermelho);text-transform:uppercase;letter-spacing:0.5px;margin-top:3px;">⚠ mais barato</div>';
+      return '';
+    }
+
+    const colsN = Math.min(allPrices.length, 4);
+    const gridCols = `repeat(${colsN}, 1fr)`;
+
+    const cardsHtml = `
+      <div style="display:grid;grid-template-columns:${gridCols};gap:8px;margin-bottom:14px;">
+        ${allPrices.map(p => `
+          <div style="${cardBg(p)}border-radius:14px;padding:12px 10px;text-align:center;">
+            <div style="font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.7px;font-weight:600;margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.label}</div>
+            <div style="font-family:var(--font-mono);font-size:${allPrices.length > 3 ? '0.95rem' : '1.15rem'};font-weight:600;${cardValorCor(p)}">${fmt(p.price)}</div>
+            <div style="font-size:0.6rem;color:var(--muted);margin-top:3px;">${p.sub}</div>
+            ${cardBadge(p)}
+          </div>
+        `).join('')}
+      </div>`;
+
+    // ── BARRAS DE COMPARAÇÃO ──
+    const maxBar = Math.max(...concs.map(c => c.preco));
+    const barsHtml = concs.length > 1 ? `
+      <div class="card" style="margin-bottom:10px;">
+        <div class="card-title"><span class="dot"></span>Comparativo de preços</div>
+        ${concs.sort((a,b) => a.preco - b.preco).map(c => {
+          const w = Math.round((c.preco / maxBar) * 100);
+          const diff = ((c.preco - menorConc) / menorConc * 100);
+          const cor = c.preco === menorConc ? 'red' : 'yellow';
+          return `
+            <div style="margin-bottom:10px;">
+              <div class="compare-label">
+                <span>${c.nome}</span>
+                <span style="font-family:var(--font-mono);">${fmt(c.preco)}${c.preco !== menorConc ? ` <span style="color:var(--muted);font-size:0.65rem;">+${diff.toFixed(1)}%</span>` : ' <span style="font-size:0.65rem;color:var(--vermelho);">mais barato</span>'}</span>
+              </div>
+              <div class="bar-track"><div class="bar-fill ${cor}" style="width:${w}%"></div></div>
+            </div>`;
+        }).join('')}
+        ${(!isNaN(meuPrecoVendaInput) && meuPrecoVendaInput > 0) ? (() => {
+          const w = Math.round((meuPrecoVenda / maxBar) * 100);
+          const cor = meuPrecoVenda <= menorConc ? 'green' : 'yellow';
+          return `<div style="margin-bottom:4px;">
+            <div class="compare-label">
+              <span style="color:var(--verde);font-weight:600;">Meu preço</span>
+              <span style="font-family:var(--font-mono);color:var(--verde);">${fmt(meuPrecoVenda)}</span>
+            </div>
+            <div class="bar-track"><div class="bar-fill ${cor}" style="width:${w}%"></div></div>
+          </div>`;
+        })() : ''}
+      </div>` : (() => {
+        const barWidth = Math.min(100, Math.max(5, (custo / menorConc) * 100));
+        const barColor = barWidth < 60 ? 'green' : barWidth < 80 ? 'yellow' : 'red';
+        const posicao = menorConc > precoMinimo
+          ? `<span style="color:var(--verde)">✓ Você pode vender abaixo do concorrente e ainda lucrar</span>`
+          : `<span style="color:var(--vermelho)">⚠ Concorrente está praticando preço abaixo do seu mínimo</span>`;
+        return `<div class="compare-bar">
+          <div class="compare-label">
+            <span>Seu custo vs ${concs[0].nome}</span>
+            <span style="font-family:var(--font-mono)">${(custo/menorConc*100).toFixed(0)}% do preço deles</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill ${barColor}" style="width:${barWidth}%"></div></div>
+          <div style="margin-top:8px;font-size:0.75rem;">${posicao}</div>
+        </div>`;
+      })();
+
+    const descontoMax = ((menorConc - precoMinimo) / menorConc * 100);
+
+    const div = document.getElementById('resultado');
+    div.classList.remove('hidden');
+    div.innerHTML = `
+      <div class="result-header"><span>📊</span><span class="med-name">${nome}</span></div>
+
+      ${cardsHtml}
+
+      <!-- PREÇO DE VENDA SUGERIDO -->
+      <div style="background:rgba(0,201,123,0.08);border:1px solid rgba(0,201,123,0.25);border-radius:16px;padding:16px;margin-bottom:10px;">
+        <div style="font-size:0.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:600;margin-bottom:10px;">💡 Venda sugerida para bater o mais barato</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+          <div>
+            <div style="font-size:0.65rem;color:var(--muted);margin-bottom:3px;">Vender por</div>
+            <div style="font-family:var(--font-mono);font-size:1.3rem;font-weight:600;color:var(--verde);">${fmt(precoSugeridoVenda)}</div>
+            <div style="font-size:0.65rem;color:var(--muted);">5% abaixo deles</div>
+          </div>
+          <div>
+            <div style="font-size:0.65rem;color:var(--muted);margin-bottom:3px;">Lucro unit.</div>
+            <div style="font-family:var(--font-mono);font-size:1.3rem;font-weight:600;color:var(--verde);">${fmt(lucroUnitario)}</div>
+            <div style="font-size:0.65rem;color:var(--muted);">por unidade</div>
+          </div>
+          <div>
+            <div style="font-size:0.65rem;color:var(--muted);margin-bottom:3px;">Margem</div>
+            <div style="font-family:var(--font-mono);font-size:1.3rem;font-weight:600;color:var(--verde);">${lucroUnitarioPct.toFixed(1)}%</div>
+            <div style="font-size:0.65rem;color:var(--muted);">sobre venda</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="metric-grid">
+        <div class="metric highlight">
+          <div class="metric-label">Preço mínimo</div>
+          <div class="metric-value">${fmt(precoMinimo)}</div>
+          <div class="metric-sub">${margemMin}% margem</div>
+        </div>
+        <div class="metric ${descontoMax > 0 ? 'highlight' : 'danger'}">
+          <div class="metric-label">Desconto máx.</div>
+          <div class="metric-value">${descontoMax > 0 ? descontoMax.toFixed(1) + '%' : '—'}</div>
+          <div class="metric-sub">${descontoMax > 0 ? 'vs mais barato' : 'sem espaço'}</div>
+        </div>
+      </div>
+
+      <div class="metric-grid-3">
+        <div class="metric purple">
+          <div class="metric-label">Média conc.</div>
+          <div class="metric-value" style="font-size:1rem;">${fmt(mediaConc)}</div>
+          <div class="metric-sub">mercado</div>
+        </div>
+        <div class="metric purple">
+          <div class="metric-label">Ticket promos</div>
+          <div class="metric-value" style="font-size:1rem;">${ticketPromos > 0 ? fmt(ticketPromos) : '—'}</div>
+          <div class="metric-sub">por item</div>
+        </div>
+        <div class="metric highlight">
+          <div class="metric-label">Margem suger.</div>
+          <div class="metric-value" style="font-size:1rem;">${margemSugerida.toFixed(1)}%</div>
+          <div class="metric-sub">ideal</div>
+        </div>
+      </div>
+
+      ${barsHtml}
+
+      ${promos.length > 0 ? `
+      <div class="promos-title">🏷️ Promoções sugeridas</div>
+      <div class="promo-list">
+        ${promos.map(p => {
+          const lucroPromoUn = (p.precoTotal / p.qtd) - custo;
+          const lucroPromoPct = (lucroPromoUn / (p.precoTotal / p.qtd) * 100);
+          const lucroPromoTotal = p.precoTotal - (custo * p.qtd);
+          return `
+          <div class="promo-item">
+            <div class="promo-left">
+              <div class="promo-tag">${p.tag}</div>
+              <div class="promo-ticket">Ticket: ${fmt(p.precoTotal / p.qtd)}/un · ${lucroPromoPct.toFixed(1)}%</div>
+              <div class="promo-ticket" style="color:var(--verde);">Lucro: ${fmt(lucroPromoUn)}/un · ${fmt(lucroPromoTotal)} total</div>
+            </div>
+            <div class="promo-detail">
+              <div class="promo-price">${fmt(p.precoTotal)}</div>
+              <div class="promo-margin">Margem: ${p.margem.toFixed(1)}%</div>
+              <div><span class="promo-status ${p.statusClass}">${p.statusLabel}</span></div>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>` : `<div class="tip">⚠ Não há espaço para promoções com margem mínima de ${margemMin}%.</div>`}
+
+      <div class="divider"></div>
+
+      <!-- TESTE DE PROMOÇÃO MANUAL -->
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:10px;">
+        <div style="font-family:var(--font-display);font-size:0.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--roxo);display:inline-block;flex-shrink:0;"></span>
+          Testar minha promoção
+        </div>
+        <div style="font-size:0.75rem;color:var(--muted);margin-bottom:10px;">Sugira uma promoção e veja se é viável. Ex: <span style="color:var(--amarelo);font-family:var(--font-mono);">4 por R$ 10</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+          <div>
+            <label style="font-size:0.7rem;">Qtd de unidades</label>
+            <input type="number" id="promoQtd" placeholder="Ex: 4" min="2" max="20" style="margin-bottom:0;">
+          </div>
+          <div>
+            <label style="font-size:0.7rem;">Preço total (R$)</label>
+            <input type="number" id="promoPreco" placeholder="Ex: 10,00" step="0.01" min="0" style="margin-bottom:0;">
+          </div>
+        </div>
+        <button onclick="testarPromo()" style="width:100%;padding:11px;background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.4);border-radius:10px;color:var(--roxo);font-family:var(--font-display);font-size:0.88rem;font-weight:700;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background=&apos;rgba(167,139,250,0.25)&apos;" onmouseout="this.style.background=&apos;rgba(167,139,250,0.15)&apos;">🔍 Analisar promoção</button>
+        <div id="promoResultado" style="margin-top:12px;"></div>
+        <div id="historicoPromos" style="margin-top:8px;"></div>
+      </div>
+
+      <button class="btn-secondary" onclick="switchTab('lista')">Ver todos os produtos →</button>
+    `;
+    div.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  let _minhaPromoSnapshots = []; // histórico de todas as promos testadas
+
+  function testarPromo() {
+    const qtd = parseInt(document.getElementById('promoQtd').value);
+    const precoTotal = parseFloat(document.getElementById('promoPreco').value);
+    const custo = parseFloat(document.getElementById('custo').value);
+    const margemMin = parseFloat(document.getElementById('margemMin').value) || 15;
+    const concsValidos = _concorrentes.filter(c => c.preco && parseFloat(c.preco) > 0);
+    const concorrente = concsValidos.length > 0 ? Math.min(...concsValidos.map(c => parseFloat(c.preco))) : NaN;
+    const nomeConcorrente = concsValidos.length === 1 ? (concsValidos[0].nome || 'Concorrente') : (concsValidos.length > 1 ? 'mais barato' : 'Concorrente');
+    const out = document.getElementById('promoResultado');
+
+    if (!qtd || qtd < 2) { out.innerHTML = `<div style="color:var(--vermelho);font-size:0.78rem;">⚠ Informe a quantidade (mínimo 2).</div>`; return; }
+    if (!precoTotal || precoTotal <= 0) { out.innerHTML = `<div style="color:var(--vermelho);font-size:0.78rem;">⚠ Informe o preço total da promoção.</div>`; return; }
+    if (!custo || !concorrente) { out.innerHTML = `<div style="color:var(--vermelho);font-size:0.78rem;">⚠ Calcule o produto primeiro.</div>`; return; }
+
+    const nomeMed = document.getElementById('nomeMed').value.trim();
+    _minhaPromoSnapshots.push({ qtd, precoTotal, custo, concorrente, margemMin, nomeConcorrente, nomeMed });
+    setTimeout(renderHistoricoPromos, 50);
+
+    const custoTotal = custo * qtd;
+    const precoMinimoTotal = custoTotal * (1 + margemMin / 100);
+    const concorrenteTotal = concorrente * qtd;
+    const precoUnitario = precoTotal / qtd;
+    const lucroTotal = precoTotal - custoTotal;
+    const lucroUn = precoUnitario - custo;
+    const margemReal = (lucroTotal / precoTotal) * 100;
+    const vsBateConcorrente = precoTotal < concorrenteTotal;
+    const vsDif = concorrenteTotal - precoTotal;
+    const isViavel = precoTotal >= precoMinimoTotal;
+    const margemOk = margemReal >= margemMin;
+
+    let veredicto, verCor, verBg, verBorder;
+    if (isViavel && margemOk) {
+      veredicto = '✅ VIÁVEL — Boa promoção!';
+      verCor = '#00C97B'; verBg = 'rgba(0,201,123,0.08)'; verBorder = 'rgba(0,201,123,0.3)';
+    } else if (isViavel && !margemOk) {
+      veredicto = '⚠️ ATENÇÃO — Abaixo da sua margem mínima';
+      verCor = '#FFD23F'; verBg = 'rgba(255,210,63,0.08)'; verBorder = 'rgba(255,210,63,0.3)';
+    } else {
+      veredicto = '❌ INVIÁVEL — Dará prejuízo!';
+      verCor = '#FF4B4B'; verBg = 'rgba(255,75,75,0.08)'; verBorder = 'rgba(255,75,75,0.3)';
+    }
+
+    out.innerHTML = `
+      <div style="background:${verBg};border:1px solid ${verBorder};border-radius:14px;padding:14px;">
+        <div style="font-family:var(--font-display);font-weight:800;font-size:0.9rem;color:${verCor};margin-bottom:12px;">${veredicto}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+          <div style="background:var(--surface2);border-radius:10px;padding:10px;">
+            <div style="font-size:0.63rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:3px;">Preço/un</div>
+            <div style="font-family:var(--font-mono);font-size:1rem;color:var(--text);">${fmt(precoUnitario)}</div>
+          </div>
+          <div style="background:var(--surface2);border-radius:10px;padding:10px;">
+            <div style="font-size:0.63rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:3px;">Custo total</div>
+            <div style="font-family:var(--font-mono);font-size:1rem;color:var(--text);">${fmt(custoTotal)}</div>
+          </div>
+          <div style="background:var(--surface2);border-radius:10px;padding:10px;">
+            <div style="font-size:0.63rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:3px;">Lucro total</div>
+            <div style="font-family:var(--font-mono);font-size:1rem;color:${lucroTotal >= 0 ? 'var(--verde)' : 'var(--vermelho)'};">${fmt(lucroTotal)}</div>
+          </div>
+          <div style="background:var(--surface2);border-radius:10px;padding:10px;">
+            <div style="font-size:0.63rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:3px;">Lucro/un</div>
+            <div style="font-family:var(--font-mono);font-size:1rem;color:${lucroUn >= 0 ? 'var(--verde)' : 'var(--vermelho)'};">${fmt(lucroUn)} <span style="font-size:0.75rem;">(${margemReal.toFixed(1)}%)</span></div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.75rem;">
+            <span style="color:var(--muted);">Sua margem real</span>
+            <span style="font-family:var(--font-mono);color:${margemOk ? 'var(--verde)' : 'var(--vermelho)'};">${margemReal.toFixed(1)}% ${margemOk ? '≥' : '<'} ${margemMin}% mínimo</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.75rem;">
+            <span style="color:var(--muted);">Preço mínimo p/ ${qtd} un</span>
+            <span style="font-family:var(--font-mono);color:var(--text);">${fmt(precoMinimoTotal)}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.75rem;">
+            <span style="color:var(--muted);">Vs ${nomeConcorrente} (${qtd} un = ${fmt(concorrenteTotal)})</span>
+            <span style="font-family:var(--font-mono);color:${vsBateConcorrente ? 'var(--verde)' : 'var(--amarelo)'};">${vsBateConcorrente ? '✓ ' + fmt(vsDif) + ' mais barato' : '✗ Não bate o concorrente'}</span>
+          </div>
+          ${!isViavel ? `<div style="margin-top:4px;padding:8px;background:rgba(255,75,75,0.1);border-radius:8px;font-size:0.72rem;color:var(--vermelho);">Preço mínimo viável para ${qtd} un: <strong>${fmt(precoMinimoTotal)}</strong> (falta ${fmt(precoMinimoTotal - precoTotal)})</div>` : ''}
+          ${isViavel && !margemOk ? `<div style="margin-top:4px;padding:8px;background:rgba(255,210,63,0.1);border-radius:8px;font-size:0.72rem;color:var(--amarelo);">Para atingir ${margemMin}% de margem, venda por no mínimo <strong>${fmt(precoMinimoTotal)}</strong></div>` : ''}
+        </div>
+      </div>
+    `;
+  }
+
+  function gerarPromos(custo, concorrente, margemMin) {
+    const promos = [];
+    const combos = [{qtd:2,texto:'2 por'},{qtd:3,texto:'3 por'},{qtd:4,texto:'4 por'},{qtd:5,texto:'5 por'},{qtd:6,texto:'6 por'}];
+    for (const combo of combos) {
+      const custoTotal = custo * combo.qtd;
+      const precoMinimoTotal = custoTotal * (1 + margemMin / 100);
+      const concorrenteTotal = concorrente * combo.qtd;
+      const precoSugerido = Math.min(concorrenteTotal * 0.95, concorrenteTotal - 0.01);
+      if (precoSugerido < precoMinimoTotal) continue;
+      const precoArredondado = arredondarBonito(precoSugerido);
+      const margemFinal = ((precoArredondado - custoTotal) / precoArredondado * 100);
+      if (margemFinal < margemMin * 0.8) continue;
+      let statusClass, statusLabel;
+      if (margemFinal >= margemMin) { statusClass = 'ok'; statusLabel = 'Seguro'; }
+      else if (margemFinal >= margemMin * 0.8) { statusClass = 'atencao'; statusLabel = 'Atencao'; }
+      else { statusClass = 'risco'; statusLabel = 'Risco'; }
+      promos.push({ tag: `${combo.texto} ${fmt(precoArredondado)}`, precoTotal: precoArredondado, qtd: combo.qtd, margem: margemFinal, statusClass, statusLabel });
+      if (promos.length >= 4) break;
+    }
+    return promos;
+  }
+
+  function arredondarBonito(valor) {
+    const inteiro = Math.floor(valor);
+    for (const c of [0.99, 0.90, 0.50, 0.00]) {
+      const candidato = inteiro + c;
+      if (candidato <= valor) return candidato;
+    }
+    return parseFloat(valor.toFixed(2));
+  }
+
+  function renderLista() {
+    const container = document.getElementById('listaMeds');
+    if (produtos.length === 0) {
+      container.innerHTML = `<div class="empty"><div class="empty-icon">💊</div><div class="empty-text">Nenhum produto ainda.<br>Calcule um medicamento para ele aparecer aqui.</div></div>`;
+      return;
+    }
+    const now = Date.now();
+    container.innerHTML = produtos.map((p, i) => {
+      const precoMin = p.custo * (1 + p.margemMin / 100);
+      const ok = p.concorrente >= precoMin;
+      const dotColor = ok ? 'var(--verde)' : 'var(--vermelho)';
+      const diasRestantes = p.timestamp ? Math.max(0, 30 - Math.floor((now - p.timestamp) / 86400000)) : '?';
+      return `
+        <div class="med-item" style="cursor:default;">
+          <div class="med-info" style="cursor:pointer;flex:1;" onclick="carregarProduto(${i})">
+            <div class="med-nome">${p.nome}</div>
+            <div class="med-meta">${p.nomeConcorrente} · ${p.data} · ♻️ ${diasRestantes}d</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="med-prices" style="cursor:pointer;" onclick="carregarProduto(${i})">
+              <div class="med-custo">Custo ${fmt(p.custo)}</div>
+              <div class="med-concorrente" style="color:var(--amarelo)">Conc. ${fmt(p.concorrente)}</div>
+            </div>
+            <div class="status-dot" style="background:${dotColor}"></div>
+            <button onclick="apagarUm(${i})" title="Apagar" style="background:transparent;border:none;color:var(--muted);font-size:1rem;cursor:pointer;padding:4px;line-height:1;transition:color 0.2s;" onmouseover="this.style.color='var(--vermelho)'" onmouseout="this.style.color='var(--muted)'">✕</button>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function apagarUm(i) {
+    if (!confirm(`Apagar "${produtos[i].nome}"?`)) return;
+    produtos.splice(i, 1); save(); renderLista();
+  }
+
+  function apagarTudo() {
+    if (produtos.length === 0) return;
+    if (!confirm('Apagar todos os produtos do histórico?')) return;
+    produtos = []; save(); renderLista();
+  }
+
+  function carregarProduto(i) {
+    const p = produtos[i];
+    document.getElementById('nomeMed').value = p.nome;
+    document.getElementById('custo').value = p.custo;
+    document.getElementById('meuPrecoVenda').value = '';
+    document.getElementById('margemMin').value = p.margemMin;
+    _concorrentes = [{ nome: p.nomeConcorrente, preco: p.concorrente }];
+    renderConcorrentes();
+    switchTab('calcular');
+    setTimeout(calcular, 100);
+  }
+
+  function importarCSV(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const lines = e.target.result.split('\n').map(l => l.trim()).filter(Boolean);
+      if (lines.length < 2) { alert('Arquivo vazio ou inválido.'); return; }
+      const rawHeader = lines[0].split(',').map(h => h.trim().replace(/"/g,''));
+      const header = rawHeader.map(h => h.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''));
+
+      // Detecta coluna de nome do produto
+      const iNome = header.findIndex(h =>
+        h.includes('nome') || h.includes('produto') || h.includes('medicamento') || h.includes('item') || h.includes('descricao') || h.includes('desc'));
+
+      // Detecta coluna de custo (meu preço)
+      const iCusto = header.findIndex(h =>
+        h.includes('custo') || h.includes('meu preco') || h.includes('meu_preco') || h.includes('preco compra') || h.includes('preco_compra') || h.includes('compra'));
+
+      // Detecta coluna de preço do concorrente — exclui colunas já usadas
+      const iConc = header.findIndex((h, i) => i !== iCusto && (
+        h.includes('concorrente') || h.includes('conc') || h.includes('preco') || h.includes('deles') || h.includes('competitor')));
+
+      // Detecta nome do concorrente — exclui colunas já usadas
+      const iNomeConc = header.findIndex((h, i) => i !== iNome && i !== iCusto && i !== iConc && (
+        h.includes('farmacia') || h.includes('loja') || h.includes('concorrente') || h.includes('conc') || h.includes('nome')));
+
+      if (iNome < 0) { alert('Coluna de nome não encontrada. Use: nome, produto, medicamento ou item.'); return; }
+      if (iCusto < 0) { alert('Coluna de custo não encontrada. Use: custo, meu preco ou preco compra.'); return; }
+      if (iConc < 0) { alert('Coluna do concorrente não encontrada. Use: concorrente, conc ou preco.'); return; }
+      let importados = 0;
+      for (let i = 1; i < lines.length; i++) {
+        const cols = lines[i].split(',').map(c => c.trim().replace(/"/g,''));
+        const nome = cols[iNome];
+        const custo = parseFloat(cols[iCusto]);
+        const concorrente = parseFloat(cols[iConc]);
+        const nomeConcorrente = iNomeConc >= 0 ? cols[iNomeConc] : 'Importado';
+        if (!nome || isNaN(custo) || isNaN(concorrente)) continue;
+        const idx = produtos.findIndex(p => p.nome.toLowerCase() === nome.toLowerCase());
+        const prod = { nome, custo, concorrente, nomeConcorrente, margemMin: 15, data: new Date().toLocaleDateString('pt-BR'), timestamp: Date.now() };
+        if (idx >= 0) produtos[idx] = prod; else produtos.push(prod);
+        importados++;
+      }
+      save();
+      const div = document.getElementById('importResult');
+      div.classList.remove('hidden');
+      div.innerHTML = `<div class="tip" style="background:rgba(0,201,123,0.1);border-color:rgba(0,201,123,0.2);color:var(--verde);">✓ ${importados} produto(s) importado(s)! Veja na aba <strong>Produtos</strong>.</div>`;
+    };
+    reader.readAsText(file);
+  }
+
+  // ── PDF EXPORT ──
+  function gerarPDF() {
+    if (produtos.length === 0) { alert('Nenhum produto para exportar.'); return; }
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const W = 210;
+    let y = 20;
+
+    // Header bar
+    doc.setFillColor(13, 15, 20);
+    doc.rect(0, 0, W, 30, 'F');
+    doc.setTextColor(0, 201, 123);
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.text('DealMetrics', 15, 18);
+    doc.setTextColor(120, 130, 150);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Relatório de Pesquisa de Preços', 15, 25);
+    doc.text(`Gerado em ${new Date().toLocaleDateString('pt-BR')}`, W - 15, 25, { align: 'right' });
+    y = 42;
+
+    // Summary row
+    const totalProd = produtos.length;
+    const mediaCusto = produtos.reduce((a, p) => a + p.custo, 0) / totalProd;
+    const mediaConc = produtos.reduce((a, p) => a + p.concorrente, 0) / totalProd;
+    const ticketGeral = (mediaCusto + mediaConc) / 2;
+
+    doc.setFillColor(22, 25, 33);
+    doc.roundedRect(12, y, W - 24, 22, 3, 3, 'F');
+    doc.setTextColor(120, 130, 150);
+    doc.setFontSize(7);
+    doc.text('PRODUTOS', 22, y + 7);
+    doc.text('CUSTO MÉDIO', 70, y + 7);
+    doc.text('CONC. MÉDIO', 120, y + 7);
+    doc.text('TICKET MÉDIO', 165, y + 7);
+    doc.setTextColor(240, 242, 247);
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.text(String(totalProd), 22, y + 17);
+    doc.text('R$ ' + mediaCusto.toFixed(2), 70, y + 17);
+    doc.text('R$ ' + mediaConc.toFixed(2), 120, y + 17);
+    doc.text('R$ ' + ticketGeral.toFixed(2), 165, y + 17);
+    y += 32;
+
+    // Table header
+    doc.setFillColor(0, 201, 123);
+    doc.rect(12, y, W - 24, 8, 'F');
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'bold');
+    doc.text('PRODUTO', 16, y + 5.5);
+    doc.text('CUSTO', 72, y + 5.5);
+    doc.text('CONCORRENTE', 90, y + 5.5);
+    doc.text('VD. SUGERIDA', 126, y + 5.5);
+    doc.text('LUCRO', 158, y + 5.5);
+    doc.text('MRG%', 178, y + 5.5);
+    y += 10;
+
+    // Table rows
+    produtos.forEach((p, i) => {
+      if (y > 265) { doc.addPage(); y = 20; }
+      const precoMin = p.custo * (1 + p.margemMin / 100);
+      const vendaSug = Math.max(precoMin, arredondarBonito(p.concorrente * 0.95));
+      const lucroUn = vendaSug - p.custo;
+      const lucroPct = (lucroUn / vendaSug * 100);
+      const margemSug = ((p.concorrente - p.custo) / p.concorrente * 100) * 0.85;
+      const ok = p.concorrente >= precoMin;
+      doc.setFillColor(i % 2 === 0 ? 22 : 26, i % 2 === 0 ? 25 : 28, i % 2 === 0 ? 33 : 38);
+      doc.rect(12, y - 1, W - 24, 9, 'F');
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(7.5);
+      doc.setTextColor(240, 242, 247);
+      doc.text(p.nome.length > 22 ? p.nome.substring(0, 20) + '…' : p.nome, 16, y + 5);
+      doc.text('R$ ' + p.custo.toFixed(2), 72, y + 5);
+      doc.text('R$ ' + p.concorrente.toFixed(2), 90, y + 5);
+      doc.setTextColor(ok ? 0 : 255, ok ? 201 : 75, ok ? 123 : 75);
+      doc.text('R$ ' + vendaSug.toFixed(2), 126, y + 5);
+      doc.setTextColor(0, 201, 123);
+      doc.text('R$ ' + lucroUn.toFixed(2), 158, y + 5);
+      doc.setTextColor(167, 139, 250);
+      doc.text(lucroPct.toFixed(1) + '%', 181, y + 5);
+      y += 9;
+    });
+
+    // Promotions
+    y += 10;
+    if (y > 250) { doc.addPage(); y = 20; }
+    doc.setTextColor(255, 210, 63);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Promocoes Sugeridas por Produto', 12, y);
+    y += 8;
+
+    produtos.forEach(p => {
+      if (y > 260) { doc.addPage(); y = 20; }
+      const promos = gerarPromos(p.custo, p.concorrente, p.margemMin);
+      if (promos.length === 0) return;
+      doc.setTextColor(0, 201, 123);
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'bold');
+      doc.text(p.nome, 14, y);
+      y += 5;
+      promos.forEach(pr => {
+        if (y > 270) { doc.addPage(); y = 20; }
+        doc.setTextColor(30, 30, 30);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7.5);
+        const ticketUn = pr.precoTotal / pr.qtd;
+        const lucroUn = ticketUn - p.custo;
+        const lucroPct = (lucroUn / ticketUn * 100);
+        const lucroTotal = pr.precoTotal - (p.custo * pr.qtd);
+        doc.text(`  - ${pr.tag}  |  Lucro/un: R$ ${lucroUn.toFixed(2)} (${lucroPct.toFixed(1)}%)  |  Lucro total: R$ ${lucroTotal.toFixed(2)}  |  ${pr.statusLabel}`, 14, y);
+        y += 5;
+      });
+      y += 2;
+    });
+
+    // Minha Promoção (teste manual) — histórico completo
+    // Reset font state to avoid encoding corruption from special chars above
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    for (const snap of _minhaPromoSnapshots) {
+      const { qtd: pQtd, precoTotal: pPreco, custo: custoAtual, concorrente: concorrenteAtual,
+              margemMin: margemAtual, nomeConcorrente: nomeConcAtual, nomeMed: nomeMedAtual } = snap;
+      if (true) {
+        y += 8;
+        if (y > 250) { doc.addPage(); y = 20; }
+
+        doc.setTextColor(0, 201, 123);
+        doc.setFontSize(13);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Minha Promocao', 12, y);
+        y += 8;
+
+        if (nomeMedAtual) {
+          doc.setTextColor(0, 180, 110);
+          doc.setFontSize(10);
+          doc.setFont('helvetica', 'bold');
+          doc.text(`Produto: ${nomeMedAtual}`, 14, y);
+          y += 7;
+        }
+
+        const pCustoTotal = custoAtual * pQtd;
+        const pPrecoMinimoTotal = pCustoTotal * (1 + margemAtual / 100);
+        const pConcorrenteTotal = concorrenteAtual * pQtd;
+        const pPrecoUn = pPreco / pQtd;
+        const pLucroTotal = pPreco - pCustoTotal;
+        const pLucroUn = pPrecoUn - custoAtual;
+        const pMargemReal = (pLucroTotal / pPreco) * 100;
+        const pVsBate = pPreco < pConcorrenteTotal;
+        const pIsViavel = pPreco >= pPrecoMinimoTotal;
+        const pMargemOk = pMargemReal >= margemAtual;
+
+        let veredictoTxt, vR, vG, vB;
+        if (pIsViavel && pMargemOk) {
+          veredictoTxt = 'VIAVEL - Boa promocao!';
+          vR = 0; vG = 201; vB = 123;
+        } else if (pIsViavel && !pMargemOk) {
+          veredictoTxt = 'ATENCAO - Abaixo da margem minima';
+          vR = 255; vG = 210; vB = 63;
+        } else {
+          veredictoTxt = 'INVIAVEL - Dara prejuizo!';
+          vR = 255; vG = 75; vB = 75;
+        }
+
+        // Verdict box
+        // Box com fundo claro compatível com PDF branco
+        doc.setFillColor(245, 245, 250);
+        doc.roundedRect(12, y, W - 24, 36, 3, 3, 'F');
+        doc.setDrawColor(vR, vG, vB);
+        doc.setLineWidth(0.5);
+        doc.roundedRect(12, y, W - 24, 36, 3, 3, 'S');
+        doc.setTextColor(vR, vG, vB);
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'bold');
+        doc.text(veredictoTxt, 18, y + 8);
+
+        doc.setFontSize(7.5);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(40, 50, 70);
+        doc.text(`Promocao: ${pQtd} un por R$ ${pPreco.toFixed(2)}  |  Preco/un: R$ ${pPrecoUn.toFixed(2)}`, 18, y + 16);
+        doc.text(`Lucro/un: R$ ${pLucroUn.toFixed(2)}  |  Lucro total: R$ ${pLucroTotal.toFixed(2)}  |  Margem real: ${pMargemReal.toFixed(1)}%`, 18, y + 22);
+        doc.setTextColor(100, 110, 130);
+        doc.text(`Margem minima: ${margemAtual}%  |  Preco minimo viavel: R$ ${pPrecoMinimoTotal.toFixed(2)}  |  ${pVsBate ? 'Bate ' + nomeConcAtual + ' (economiza R$ ' + (pConcorrenteTotal - pPreco).toFixed(2) + ')' : 'Nao bate ' + nomeConcAtual}`, 18, y + 28);
+        y += 44;
+      }
+    }
+
+    // Page footer
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setTextColor(80, 90, 110);
+      doc.setFontSize(7);
+      doc.text('Mayara Almeida · DealMetrics', 15, 290);
+      doc.text(`${i} / ${pageCount}`, W - 15, 290, { align: 'right' });
+    }
+
+    doc.save(`dealmetrics-${new Date().toISOString().slice(0,10)}.pdf`);
+  }
+
+  function baixarModelo() {
+    const b64 = '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';
+    const bin = atob(b64);
+    const arr = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+    const blob = new Blob([arr], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'modelo_dealmetrics.xlsx';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  function renderHistoricoPromos() {
+    const container = document.getElementById('historicoPromos');
+    if (!container) return;
+    if (_minhaPromoSnapshots.length === 0) { container.innerHTML = ''; return; }
+    container.innerHTML = _minhaPromoSnapshots.map(function(s, idx) {
+      const custoTotal = s.custo * s.qtd;
+      const precoMinimoTotal = custoTotal * (1 + s.margemMin / 100);
+      const concorrenteTotal = s.concorrente * s.qtd;
+      const precoUn = s.precoTotal / s.qtd;
+      const lucroTotal = s.precoTotal - custoTotal;
+      const lucroUn = precoUn - s.custo;
+      const margemReal = (lucroTotal / s.precoTotal) * 100;
+      const vsBate = s.precoTotal < concorrenteTotal;
+      const isViavel = s.precoTotal >= precoMinimoTotal;
+      const margemOk = margemReal >= s.margemMin;
+      let cor, bg, border, label;
+      if (isViavel && margemOk)       { cor='var(--verde)';   bg='rgba(0,201,123,0.08)';  border='rgba(0,201,123,0.3)';  label='✅ VIÁVEL'; }
+      else if (isViavel && !margemOk) { cor='var(--amarelo)'; bg='rgba(255,210,63,0.08)'; border='rgba(255,210,63,0.3)'; label='⚠️ ATENÇÃO'; }
+      else                            { cor='var(--vermelho)'; bg='rgba(255,75,75,0.08)';  border='rgba(255,75,75,0.3)';  label='❌ INVIÁVEL'; }
+      return '<div style="background:'+bg+';border:1px solid '+border+';border-radius:12px;padding:12px 14px;margin-bottom:8px;">'
+        + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">'
+        + '<div><span style="font-family:var(--font-display);font-weight:800;font-size:0.82rem;color:'+cor+';">'+label+'</span>'
+        + '<span style="font-size:0.72rem;color:var(--muted);margin-left:8px;">'+(s.nomeMed||'')+'</span></div>'
+        + '<button onclick="_minhaPromoSnapshots.splice('+idx+',1);renderHistoricoPromos();" style="background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:0.85rem;" title="Remover">✕</button>'
+        + '</div>'
+        + '<div style="font-family:var(--font-mono);font-size:0.8rem;color:var(--text);">'+s.qtd+' un por '+fmt(s.precoTotal)+' · '+fmt(precoUn)+'/un</div>'
+        + '<div style="font-size:0.72rem;color:var(--muted);margin-top:3px;">Lucro: '+fmt(lucroUn)+'/un · '+fmt(lucroTotal)+' total · Margem: '+margemReal.toFixed(1)+'%'+(vsBate?' · ✓ bate '+s.nomeConcorrente:'')+'</div>'
+        + '</div>';
+    }).join('');
+  }
+
+</script>
+</body>
+</html>

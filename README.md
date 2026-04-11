@@ -10,7 +10,7 @@
 
 **Calculadora — entrada de dados e resultado:**
 
-| Formulário | Resultado | Comparativo |
+| Dados para promoções | Comparativo | Promoções |
 |---|---|---|
 | ![Formulário](screenshots/screenshot-calcular.png) | ![Resultado](screenshots/screenshot-calcular2.png) | ![Promoções](screenshots/screenshot-calcular3.png) |
 

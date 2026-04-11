@@ -5,8 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DealMetrics — Inteligência de Preços</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">  }
-</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   :root {
     --verde: #00C97B;
@@ -36,32 +35,60 @@
   }
   .app { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; padding: 0 0 60px; }
 
-  header { padding: 28px 20px 20px; display: flex; align-items: center; justify-content: space-between; }
+  header { padding: 20px 20px 10px; display: flex; align-items: center; justify-content: space-between; }
   .logo { font-family: var(--font-display); font-weight: 800; font-size: 1.3rem; letter-spacing: -0.5px; }
   .logo span { color: var(--verde); }
+  .logo-sub { font-size: 0.62rem; color: var(--muted); font-family: var(--font-body); font-weight: 400; opacity: 0.55; letter-spacing: 0.3px; margin-top: 2px; }
   .badge { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-size: 0.7rem; color: var(--muted); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 1px; }
 
   .tabs { display: flex; gap: 6px; padding: 0 20px; margin-bottom: 24px; }
   .tab { flex: 1; padding: 10px 8px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; color: var(--muted); font-family: var(--font-body); font-size: 0.78rem; font-weight: 500; cursor: pointer; transition: all 0.2s; text-align: center; }
   .tab.active { background: var(--verde); border-color: var(--verde); color: #000; font-weight: 700; }
 
-  .panel { display: none; padding: 0 20px; animation: fadeUp 0.3s ease; }
+  /* Grupo principal */
+  .tab-group { flex: 1; padding: 10px 8px; background: linear-gradient(180deg, var(--surface) 0%, rgba(20,23,32,0.9) 100%); border: 1px solid rgba(255,255,255,0.07); border-radius: 12px 12px 0 0; color: var(--muted); font-family: var(--font-body); font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s; text-align: center; border-bottom: none; display: flex; align-items: center; justify-content: center; gap: 5px; white-space: nowrap; }
+  .tab-group.active { background: linear-gradient(180deg, var(--surface2) 0%, rgba(26,30,44,0.98) 100%); border-color: rgba(255,255,255,0.09); color: var(--text); }
+  #grp-promo.active { color: var(--verde); border-top: 2px solid var(--verde); }
+  #grp-meta.active { color: var(--verde); border-top: 2px solid var(--verde); }
+  #grp-relatorio.active { color: var(--roxo); border-top: 2px solid var(--roxo); }
+
+  /* Sub-tabs row */
+  .subtabs { display: flex; gap: 4px; padding: 8px 20px 12px; background: linear-gradient(180deg, var(--surface2) 0%, rgba(22,25,33,0.98) 100%); border: 1px solid rgba(255,255,255,0.07); border-top: none; border-radius: 0 0 14px 14px; margin: 0 20px 22px; box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+  .subtabs .tab { font-size: 0.72rem; padding: 8px 6px; border-radius: 8px; }
+  .subtabs .tab.active { background: var(--verde); border-color: var(--verde); color: #000; }
+  #subtabs-promo .tab.active { background: var(--verde); border-color: var(--verde); color: #000; }
+  #subtabs-meta { flex-direction: row; }
+  #subtabs-meta .tab { flex: 1; font-size: 0.68rem; padding: 8px 4px; border-radius: 8px; text-align: center; }
+  #subtabs-meta .tab.active { background: var(--verde); border-color: var(--verde); color: #000; font-weight: 700; }
+
+  .panel { display: none; padding: 0 20px; animation: fadeUp 0.3s ease; max-width: 480px; width: 100%; box-sizing: border-box; }
   .panel.active { display: block; }
   @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 18px; margin-bottom: 14px; }
+  .card {
+    background: linear-gradient(145deg, var(--surface) 0%, rgba(30,34,48,0.95) 100%);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 14px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.04);
+    transition: box-shadow 0.2s;
+  }
+  .card:hover {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.05);
+  }
   .card-title { font-family: var(--font-display); font-weight: 700; font-size: 0.85rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
   .card-title .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--verde); flex-shrink: 0; }
 
   label { display: block; font-size: 0.78rem; color: var(--muted); margin-bottom: 5px; font-weight: 500; }
-  input[type="text"], input[type="number"], select { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 11px 14px; color: var(--text); font-family: var(--font-mono); font-size: 0.95rem; margin-bottom: 12px; transition: border-color 0.2s; -webkit-appearance: none; }
-  input:focus, select:focus { outline: none; border-color: var(--verde); }
+  input[type="text"], input[type="number"], select { width: 100%; background: var(--surface2); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 11px 14px; color: var(--text); font-family: var(--font-mono); font-size: 0.95rem; margin-bottom: 12px; transition: border-color 0.2s, box-shadow 0.2s; -webkit-appearance: none; box-shadow: inset 0 1px 3px rgba(0,0,0,0.3); }
+  input:focus, select:focus { outline: none; border-color: var(--verde); box-shadow: 0 0 0 3px rgba(0,201,123,0.12), inset 0 1px 3px rgba(0,0,0,0.2); }
   input::placeholder { color: var(--muted); opacity: 0.6; }
 
   .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-  .btn-primary { width: 100%; padding: 14px; background: var(--verde); border: none; border-radius: 12px; color: #000; font-family: var(--font-display); font-size: 0.95rem; font-weight: 800; cursor: pointer; transition: all 0.2s; letter-spacing: 0.3px; }
-  .btn-primary:hover { background: var(--verde-dark); transform: translateY(-1px); }
+  .btn-primary { width: 100%; padding: 14px; background: var(--verde); border: none; border-radius: 12px; color: #000; font-family: var(--font-display); font-size: 0.95rem; font-weight: 800; cursor: pointer; transition: all 0.2s; letter-spacing: 0.3px; box-shadow: 0 4px 16px rgba(0,201,123,0.3); }
+  .btn-primary:hover { background: var(--verde-dark); transform: translateY(-1px); box-shadow: 0 6px 22px rgba(0,201,123,0.4); }
   .btn-primary:active { transform: translateY(0); }
 
   .btn-secondary { width: 100%; padding: 11px; background: transparent; border: 1px solid var(--border); border-radius: 10px; color: var(--muted); font-family: var(--font-body); font-size: 0.85rem; cursor: pointer; transition: all 0.2s; margin-top: 6px; }
@@ -76,7 +103,7 @@
 
   .metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
   .metric-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px; }
-  .metric { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px; }
+  .metric { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.25); }
   .metric.highlight { border-color: rgba(0,201,123,0.3); background: rgba(0,201,123,0.06); }
   .metric.danger { border-color: rgba(255,75,75,0.3); background: rgba(255,75,75,0.06); }
   .metric.warn { border-color: rgba(255,210,63,0.3); background: rgba(255,210,63,0.06); }
@@ -91,8 +118,8 @@
 
   .promos-title { font-family: var(--font-display); font-size: 0.8rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; margin-top: 4px; }
   .promo-list { display: flex; flex-direction: column; gap: 8px; }
-  .promo-item { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; transition: all 0.2s; }
-  .promo-item:hover { border-color: var(--verde); }
+  .promo-item { background: linear-gradient(145deg, var(--surface) 0%, rgba(26,30,44,0.95) 100%); border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; transition: all 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+  .promo-item:hover { border-color: var(--verde); box-shadow: 0 4px 14px rgba(0,201,123,0.12); }
   .promo-left { display: flex; flex-direction: column; gap: 3px; }
   .promo-tag { font-family: var(--font-mono); font-size: 1rem; font-weight: 500; color: var(--amarelo); }
   .promo-ticket { font-size: 0.68rem; color: var(--muted); }
@@ -104,7 +131,7 @@
   .atencao { background: rgba(255,210,63,0.15); color: var(--amarelo); }
   .risco { background: rgba(255,75,75,0.15); color: var(--vermelho); }
 
-  .compare-bar { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 10px; }
+  .compare-bar { background: linear-gradient(145deg, var(--surface) 0%, rgba(26,30,44,0.95) 100%); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 14px; margin-bottom: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
   .compare-label { font-size: 0.72rem; color: var(--muted); margin-bottom: 8px; display: flex; justify-content: space-between; }
   .bar-track { height: 8px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
   .bar-fill { height: 100%; border-radius: 4px; transition: width 0.6s cubic-bezier(0.34,1.56,0.64,1); }
@@ -113,7 +140,7 @@
   .bar-fill.yellow { background: var(--amarelo); }
 
   .med-list { display: flex; flex-direction: column; gap: 8px; }
-  .med-item { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px; display: flex; align-items: center; justify-content: space-between; transition: all 0.2s; }
+  .med-item { background: linear-gradient(145deg, var(--surface) 0%, rgba(26,30,44,0.95) 100%); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: space-between; transition: all 0.2s; }
   .med-item:hover { border-color: rgba(0,201,123,0.4); }
   .med-info .med-nome { font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; }
   .med-info .med-meta { font-size: 0.72rem; color: var(--muted); margin-top: 2px; font-family: var(--font-mono); }
@@ -150,22 +177,48 @@
 <body>
 <div class="app">
   <header>
-    <div class="logo">Deal<span>Metrics</span></div>
-    <div class="badge">v3.0</div>
+    <div>
+      <div class="logo">Deal<span>Metrics</span></div>
+      <div class="logo-sub">Mayara Almeida</div>
+    </div>
+    <div class="badge">v3.4</div>
   </header>
 
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab('calcular')">🧮 Calcular</button>
-    <button class="tab" onclick="switchTab('lista')">📋 Produtos</button>
-    <button class="tab" onclick="switchTab('importar')">📂 Importar</button>
+  <!-- LINHA 1: Grupos principais -->
+  <div class="tabs" style="margin-bottom:6px; justify-content:center;">
+    <button class="tab-group active" id="grp-promo" onclick="switchGroup('promo')">💲 Promoções</button>
+    <button class="tab-group" id="grp-meta" onclick="switchGroup('meta')">🎯 Meta</button>
+    <button class="tab-group" id="grp-relatorio" onclick="switchGroup('relatorio')">📊 Relatório</button>
+  </div>
+
+  <!-- LINHA 2: Sub-tabs de Promoções (visível por padrão) -->
+  <div class="subtabs" id="subtabs-promo">
+    <button class="tab active" id="tab-calcular" onclick="switchTab('calcular')">🧮 Calcular</button>
+    <button class="tab" id="tab-lista" onclick="switchTab('lista')">📋 Produtos</button>
+    <button class="tab" id="tab-importar" onclick="switchTab('importar')">📂 Importar</button>
+  </div>
+
+  <!-- LINHA 2: Sub-tabs de Meta (oculto por padrão) -->
+  <div class="subtabs" id="subtabs-meta" style="display:none;">
+    <button class="tab active" id="tab-filiais" onclick="switchMetaTab('filiais')">🏪 Filiais</button>
+    <button class="tab" id="tab-fixos" onclick="switchMetaTab('fixos')">📌 Fixos</button>
+    <button class="tab" id="tab-variaveis" onclick="switchMetaTab('variaveis')">📊 Variáveis</button>
+    <button class="tab" id="tab-metadesejada" onclick="switchMetaTab('metadesejada')">🎯 Meta</button>
+    <button class="tab" id="tab-projecao" onclick="switchMetaTab('projecao')">📈 Projeção</button>
+    <button class="tab" id="tab-vendedores-proj" onclick="switchMetaTab('vendedores-proj')">👥 Vendedores</button>
+  </div>
+
+  <!-- LINHA 2: Sub-tabs de Relatório (oculto por padrão) -->
+  <div class="subtabs" id="subtabs-relatorio" style="display:none;">
+    <button class="tab active" id="tab-relatorio-geral" onclick="switchRelatTab('relatorio-geral')">📋 Gerar Relatório</button>
   </div>
 
   <!-- CALCULAR -->
   <div class="panel active" id="panel-calcular">
     <div class="card">
       <div class="card-title"><span class="dot"></span> Dados do Produto</div>
-      <label>Nome do medicamento</label>
-      <input type="text" id="nomeMed" placeholder="Ex: Losartana 50mg">
+      <label>Nome do produto</label>
+      <input type="text" id="nomeMed" placeholder="Ex: Medicamento X, Eletrônico Y, Vestuário Z">
       <label>Meu custo (R$)</label>
       <input type="number" id="custo" placeholder="0,00" step="0.01" min="0">
 
@@ -219,7 +272,7 @@
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px;">
         <div style="background:var(--surface2);border-radius:8px;padding:8px 10px;">
           <div style="font-size:0.65rem;color:var(--verde);font-weight:700;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:3px;">Produto</div>
-          <div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--muted);">nome, produto, medicamento...</div>
+          <div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--muted);">nome, produto, item, descricao...</div>
         </div>
         <div style="background:var(--surface2);border-radius:8px;padding:8px 10px;">
           <div style="font-size:0.65rem;color:var(--verde);font-weight:700;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:3px;">Meu custo</div>
@@ -236,17 +289,333 @@
       </div>
       <div style="font-size:0.72rem;color:var(--muted);margin-bottom:6px;font-weight:600;">Exemplo:</div>
       <div style="font-family:var(--font-mono);font-size:0.70rem;color:var(--muted);line-height:1.9;background:var(--surface2);border-radius:8px;padding:10px;">
-        produto,custo,concorrente,farmacia<br>
-        Losartana 50mg,3.20,5.99,Ultrafarma<br>
-        Metformina 500mg,4.10,7.50,Drogasil<br>
-        Atorvastatina 20mg,8.00,14.00,Droga Raia
+        produto,custo,concorrente,loja<br>
+        Camiseta M Branca,18.00,39.90,Loja Rival<br>
+        Mochila 30L,45.00,89.99,Mercado Livre<br>
+        Fone Bluetooth,60.00,149.00,Americanas
       </div>
     </div>
     <div id="importResult" class="hidden"></div>
   </div>
-</div>
 
-<footer>Mayara Almeida</footer>
+  <!-- META: FILIAIS -->
+  <div class="panel" id="panel-filiais">
+
+    <!-- GERENCIAMENTO DE FILIAIS -->
+    <div class="card" style="margin-bottom:14px;">
+      <div class="card-title"><span class="dot" style="background:var(--verde)"></span> Filiais</div>
+      <div id="filialTabsContainer" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;"></div>
+      <div style="display:flex;gap:8px;">
+        <button type="button" onclick="adicionarFilial()" style="flex:1;padding:9px;background:rgba(0,201,123,0.12);border:1px solid rgba(0,201,123,0.35);border-radius:10px;color:var(--verde);font-family:var(--font-display);font-size:0.8rem;font-weight:700;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,201,123,0.22)'" onmouseout="this.style.background='rgba(0,201,123,0.12)'">+ Nova Filial</button>
+        <button type="button" onclick="verConsolidado()" id="btnConsolidado" style="flex:1;padding:9px;background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.35);border-radius:10px;color:var(--roxo);font-family:var(--font-display);font-size:0.8rem;font-weight:700;cursor:pointer;transition:all 0.2s;display:none;" onmouseover="this.style.background='rgba(167,139,250,0.22)'" onmouseout="this.style.background='rgba(167,139,250,0.12)'">🏢 Consolidado</button>
+      </div>
+    </div>
+
+    <!-- CONSOLIDADO (oculto por padrão) -->
+    <div id="consolidadoPanel" style="display:none;">
+      <div id="consolidadoResultado"></div>
+      <button type="button" onclick="fecharConsolidado()" style="width:100%;padding:10px;background:transparent;border:1px solid var(--border);border-radius:10px;color:var(--muted);font-size:0.8rem;cursor:pointer;margin-bottom:14px;">← Voltar para filial</button>
+    </div>
+
+    <!-- FILIAL NOME -->
+    <div id="filialFormPanel">
+    <div class="card">
+      <div class="card-title"><span class="dot"></span> Filial / Loja</div>
+      <label>Nome da filial</label>
+      <input type="text" id="metaFilial" placeholder="Ex: Loja Centro, Filial 01" oninput="atualizarNomeFilialAtiva()">
+      <div id="btnExcluirFilial" class="hidden" style="margin-top:6px;">
+        <button type="button" onclick="mostrarConfirmExcluir()" style="width:100%;padding:9px;background:transparent;border:1px solid rgba(255,75,75,0.3);border-radius:10px;color:var(--vermelho);font-family:var(--font-display);font-size:0.78rem;font-weight:700;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,75,75,0.1)'" onmouseout="this.style.background='transparent'">🗑 Excluir esta filial</button>
+        <div id="confirmExcluirBox" style="display:none;margin-top:8px;background:rgba(255,75,75,0.1);border:1px solid rgba(255,75,75,0.35);border-radius:12px;padding:12px 14px;">
+          <div style="font-size:0.78rem;color:var(--vermelho);font-weight:600;margin-bottom:10px;">Tem certeza? Esta ação não pode ser desfeita.</div>
+          <div style="display:flex;gap:8px;">
+            <button type="button" onclick="executarExcluirFilial()" style="flex:1;padding:8px;background:var(--vermelho);border:none;border-radius:8px;color:#fff;font-family:var(--font-display);font-size:0.78rem;font-weight:700;cursor:pointer;">Sim, excluir</button>
+            <button type="button" onclick="cancelarExcluirFilial()" style="flex:1;padding:8px;background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-family:var(--font-body);font-size:0.78rem;cursor:pointer;">Cancelar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="btn-secondary" onclick="switchMetaTab('fixos')" style="margin-top:4px;">Próximo: Custos Fixos →</button>
+    </div><!-- /filialFormPanel -->
+  </div>
+
+  <!-- META: CUSTOS FIXOS -->
+  <div class="panel" id="panel-fixos">
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:var(--azul)"></span> Custos Fixos Mensais</div>
+      <label>Aluguel (R$)</label>
+      <input type="text" inputmode="decimal" id="metaAluguel" placeholder="0,00" onblur="smartParseInput(this)" oninput="atualizarTotais()">
+      <label>Internet (R$)</label>
+      <input type="text" inputmode="decimal" id="metaInternet" placeholder="0,00" onblur="smartParseInput(this)" oninput="atualizarTotais()">
+      <label>Luz / Energia (R$)</label>
+      <input type="text" inputmode="decimal" id="metaLuz" placeholder="0,00" onblur="smartParseInput(this)" oninput="atualizarTotais()">
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;margin-top:6px;">
+        <label style="margin-bottom:0;">Outros custos fixos</label>
+        <button type="button" onclick="adicionarOutroFixo()" style="background:rgba(26,115,232,0.12);border:1px solid rgba(26,115,232,0.35);border-radius:8px;color:var(--azul);font-size:0.75rem;font-weight:700;padding:4px 12px;cursor:pointer;font-family:var(--font-display);transition:all 0.2s;" onmouseover="this.style.background='rgba(26,115,232,0.22)'" onmouseout="this.style.background='rgba(26,115,232,0.12)'">+ Adicionar</button>
+      </div>
+      <div id="outrosFixosLista"></div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;margin-top:6px;">
+        <label style="margin-bottom:0;">Funcionários</label>
+        <div style="display:flex;gap:6px;">
+          <button type="button" id="btnModoFolha" onclick="toggleModoFolha()" style="background:rgba(26,115,232,0.12);border:1px solid rgba(26,115,232,0.35);border-radius:8px;color:var(--azul);font-size:0.72rem;font-weight:700;padding:4px 10px;cursor:pointer;font-family:var(--font-display);transition:all 0.2s;">📋 Folha total</button>
+          <button type="button" id="btnModoIndividual" onclick="toggleModoIndividual()" style="background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:0.72rem;font-weight:700;padding:4px 10px;cursor:pointer;font-family:var(--font-display);transition:all 0.2s;">+ Individual</button>
+        </div>
+      </div>
+      <div id="modoFolhaDiv" style="display:none;margin-bottom:8px;">
+        <input type="text" inputmode="decimal" id="metaFolhaPagamento" placeholder="Ex: 8500 (total da folha)" onblur="smartParseInput(this)" oninput="atualizarTotais()" style="margin-bottom:0;">
+      </div>
+      <div id="modoIndividualDiv">
+        <div style="display:flex;justify-content:flex-end;margin-bottom:6px;">
+          <button type="button" onclick="adicionarFuncionario()" style="background:rgba(26,115,232,0.12);border:1px solid rgba(26,115,232,0.35);border-radius:8px;color:var(--azul);font-size:0.75rem;font-weight:700;padding:4px 12px;cursor:pointer;font-family:var(--font-display);transition:all 0.2s;" onmouseover="this.style.background='rgba(26,115,232,0.22)'" onmouseout="this.style.background='rgba(26,115,232,0.12)'">+ Adicionar</button>
+        </div>
+        <div id="funcionariosLista"></div>
+      </div>
+      <div style="background:rgba(26,115,232,0.07);border:1px solid rgba(26,115,232,0.15);border-radius:10px;padding:8px 14px;display:flex;justify-content:space-between;align-items:center;margin-top:4px;margin-bottom:10px;" id="subTotalFuncBox">
+        <span style="color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;font-size:0.65rem;font-weight:600;">Total Funcionários</span>
+        <span id="metaSubTotalFuncDisplay" style="font-family:var(--font-mono);font-size:0.95rem;color:var(--azul);font-weight:600;">R$ 0,00</span>
+      </div>
+      <div style="height:1px;background:var(--border);margin-bottom:10px;"></div>
+      <div style="background:rgba(26,115,232,0.07);border:1px solid rgba(26,115,232,0.15);border-radius:10px;padding:8px 14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <span style="color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;font-size:0.65rem;font-weight:600;">Total Custos Fixos</span>
+        <span id="metaSubTotalFixosDisplay" style="font-family:var(--font-mono);font-size:0.95rem;color:var(--azul);font-weight:600;">R$ 0,00</span>
+      </div>
+      <div style="background:rgba(26,115,232,0.15);border:1px solid rgba(26,115,232,0.35);border-radius:10px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;">
+        <span style="color:var(--text);text-transform:uppercase;letter-spacing:0.8px;font-size:0.68rem;font-weight:700;">Total Geral Fixos</span>
+        <span id="metaTotalFixosDisplay" style="font-family:var(--font-mono);font-size:1.05rem;color:var(--azul);font-weight:700;">R$ 0,00</span>
+      </div>
+    </div>
+    <button class="btn-secondary" onclick="switchMetaTab('variaveis')" style="margin-top:4px;">Próximo: Custos Variáveis →</button>
+  </div>
+
+  <!-- META: CUSTOS VARIÁVEIS -->
+  <div class="panel" id="panel-variaveis">
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:var(--amarelo)"></span> Custos Variáveis</div>
+      <div class="tip" style="margin-bottom:12px;">💡 Preencha o valor em R$ baseado no faturamento médio — o sistema calcula a % automaticamente.</div>
+      <label>Faturamento médio de referência (R$) <span style="color:var(--verde);font-size:0.7rem;">← usado para calcular %</span></label>
+      <input type="text" inputmode="decimal" id="metaFatRef" placeholder="Ex: 300000" onblur="smartParseInput(this)" oninput="atualizarTotais()">
+      <label>Valor de compras para reposição de produtos (R$/mês)</label>
+      <div class="row-2" style="margin-bottom:12px;">
+        <input type="text" inputmode="decimal" id="metaCMVReais" placeholder="0,00" onblur="smartParseInput(this)" oninput="atualizarTotais()" style="margin-bottom:0;">
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:11px 14px;font-family:var(--font-mono);font-size:0.9rem;color:var(--amarelo);display:flex;align-items:center;justify-content:center;" id="metaCMVPctDisplay">—</div>
+      </div>
+      <label>Taxas de cartão (R$/mês)</label>
+      <div class="row-2" style="margin-bottom:12px;">
+        <input type="text" inputmode="decimal" id="metaCartaoReais" placeholder="0,00" onblur="smartParseInput(this)" oninput="atualizarTotais()" style="margin-bottom:0;">
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:11px 14px;font-family:var(--font-mono);font-size:0.9rem;color:var(--amarelo);display:flex;align-items:center;justify-content:center;" id="metaCartaoPctDisplay">—</div>
+      </div>
+      <label>Comissões (R$/mês)</label>
+      <div class="row-2" style="margin-bottom:12px;">
+        <input type="text" inputmode="decimal" id="metaComissoesReais" placeholder="0,00" onblur="smartParseInput(this)" oninput="atualizarTotais()" style="margin-bottom:0;">
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:11px 14px;font-family:var(--font-mono);font-size:0.9rem;color:var(--amarelo);display:flex;align-items:center;justify-content:center;" id="metaComissoesPctDisplay">—</div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;margin-top:4px;">
+        <label style="margin-bottom:0;">Outros custos variáveis</label>
+        <button type="button" onclick="adicionarOutroVariavel()" style="background:rgba(255,210,63,0.12);border:1px solid rgba(255,210,63,0.35);border-radius:8px;color:var(--amarelo);font-size:0.75rem;font-weight:700;padding:4px 12px;cursor:pointer;font-family:var(--font-display);transition:all 0.2s;" onmouseover="this.style.background='rgba(255,210,63,0.22)'" onmouseout="this.style.background='rgba(255,210,63,0.12)'">+ Adicionar</button>
+      </div>
+      <div id="outrosVariaveisLista"></div>
+      <div style="background:rgba(255,210,63,0.08);border:1px solid rgba(255,210,63,0.2);border-radius:10px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;">
+        <span style="color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;font-size:0.68rem;font-weight:600;">Total Variáveis</span>
+        <span style="display:flex;gap:12px;align-items:center;">
+          <span id="metaTotalVarReaisDisplay" style="font-family:var(--font-mono);font-size:0.9rem;color:var(--muted);">R$ 0,00</span>
+          <span id="metaTotalVarPctDisplay" style="font-family:var(--font-mono);font-size:1.05rem;color:var(--amarelo);font-weight:600;">0,0%</span>
+        </span>
+      </div>
+    </div>
+    <button class="btn-secondary" onclick="switchMetaTab('metadesejada')" style="margin-top:4px;">Próximo: Meta + Margem →</button>
+  </div>
+
+  <!-- META: PROJEÇÃO -->
+  <div class="panel" id="panel-projecao">
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:var(--roxo)"></span> Projeção de Vendas</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;margin-top:2px;">
+        <span style="font-size:0.72rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.7px;">Venda diária esperada</span>
+      </div>
+      <div class="row-2">
+        <div>
+          <label>Bruta (R$)</label>
+          <input type="text" inputmode="decimal" id="metaVendaDiariaMin" placeholder="Ex: 10000" onblur="smartParseInput(this)" oninput="atualizarProjecao()" style="margin-bottom:0;">
+        </div>
+        <div>
+          <label>Líquida (R$)</label>
+          <input type="text" inputmode="decimal" id="metaVendaDiariaMax" placeholder="Ex: 8500" onblur="smartParseInput(this)" oninput="atualizarProjecao()" style="margin-bottom:0;">
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;margin-top:14px;">
+        <span style="font-size:0.72rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.7px;">Quanto vendeu hoje</span>
+      </div>
+      <div class="row-2">
+        <div>
+          <label>Bruto (R$)</label>
+          <input type="text" inputmode="decimal" id="metaVendaReal" placeholder="Ex: 12000" onblur="smartParseInput(this)" oninput="atualizarProjecao()" style="margin-bottom:0;">
+        </div>
+        <div>
+          <label>Líquido (R$)</label>
+          <input type="text" inputmode="decimal" id="metaVendaRealLiq" placeholder="Ex: 10200" onblur="smartParseInput(this)" oninput="atualizarProjecao()" style="margin-bottom:4px;">
+        </div>
+      </div>
+      <div id="metaProjecaoDisplay" style="margin-top:4px;"></div>
+
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;margin-top:14px;">
+        <span style="font-size:0.72rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.7px;">📊 ACUMULADO DO MÊS</span>
+      </div>
+      <div class="row-2">
+        <div>
+          <label>Acumulado bruto (R$)</label>
+          <input type="text" inputmode="decimal" id="metaAcumBruto" placeholder="Ex: 85000" onblur="smartParseInput(this)" oninput="atualizarProjecao()" style="margin-bottom:0;">
+        </div>
+        <div>
+          <label>Acumulado líquido (R$)</label>
+          <input type="text" inputmode="decimal" id="metaAcumLiq" placeholder="Ex: 71000" onblur="smartParseInput(this)" oninput="atualizarProjecao()" style="margin-bottom:4px;">
+        </div>
+      </div>
+      <div id="metaAcumDisplay" style="margin-top:2px;"></div>
+    </div>
+    <button class="btn-secondary" onclick="switchMetaTab('vendedores-proj')" style="margin-top:4px;">Próximo: Vendedores →</button>
+  </div>
+
+  <!-- META: PROJEÇÃO POR VENDEDOR -->
+  <div class="panel" id="panel-vendedores-proj">
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:var(--roxo)"></span> Projeção por Vendedor</div>
+
+      <div style="background:rgba(167,139,250,0.07);border:1px solid rgba(167,139,250,0.2);border-radius:10px;padding:9px 13px;margin-bottom:14px;">
+        <div style="font-size:0.72rem;color:var(--muted);margin-bottom:4px;">📅 Dias úteis restantes no mês</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input type="number" id="diasRestantes" placeholder="Ex: 12" min="0" max="26"
+            oninput="_vendedores.forEach(function(_,i){atualizarVendedorPerf(i)})"
+            style="width:90px;margin-bottom:0;font-size:0.95rem;padding:7px 10px;font-family:var(--font-mono);">
+          <span style="font-size:0.72rem;color:var(--muted);">dias úteis restam para fechar o mês</span>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <span style="font-size:0.72rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.7px;">Vendedores</span>
+        <button type="button" onclick="adicionarVendedor()" style="background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.35);border-radius:8px;color:var(--roxo);font-size:0.7rem;font-weight:700;padding:3px 10px;cursor:pointer;font-family:var(--font-display);transition:all 0.2s;" onmouseover="this.style.background='rgba(167,139,250,0.22)'" onmouseout="this.style.background='rgba(167,139,250,0.12)'">+ Adicionar</button>
+      </div>
+      <div id="vendedoresLista"></div>
+    </div>
+    <button class="btn-secondary" onclick="switchMetaTab('metadesejada')" style="margin-top:4px;">Próximo: Meta Desejada →</button>
+  </div>
+
+  <!-- META: META MENSAL TOTAL (nova lógica invertida) -->
+  <div class="panel" id="panel-metadesejada">
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:var(--verde)"></span> Meta Mensal Total</div>
+
+      <!-- Faturamento médio de referência (duplicado aqui para conveniência) -->
+      <div style="background:rgba(167,139,250,0.06);border:1px solid rgba(167,139,250,0.2);border-radius:10px;padding:10px 14px;margin-bottom:12px;">
+        <label style="margin-bottom:4px;color:var(--roxo);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.7px;">📊 Faturamento médio real da filial (R$)</label>
+        <input type="text" inputmode="decimal" id="metaFatRefMeta" placeholder="Ex: 315000 — média do que a filial costuma faturar"
+          onblur="smartParseInput(this)"
+          oninput="sincFatRefMeta(this.value);calcularMetaInvertida();"
+          style="margin-bottom:0;">
+        <div style="font-size:0.65rem;color:var(--muted);margin-top:5px;line-height:1.4;">Usado como referência para sugerir metas coerentes com a realidade da filial.</div>
+      </div>
+
+      <!-- Campo único: Meta total de faturamento -->
+      <label>Sua Meta de Faturamento Total (R$)</label>
+      <input type="text" inputmode="decimal" id="metaDesejada" placeholder="Ex: 440000 ou 440k"
+        onblur="smartParseInput(this)"
+        oninput="calcularMetaInvertida()">
+      <!-- campos ocultos mantidos para compatibilidade com restante do sistema -->
+      <input type="hidden" id="metaDesejadaPct">
+      <input type="hidden" id="metaLucro" value="10">
+
+      <!-- Bloco resultado: o que essa meta dá de lucro -->
+      <div id="metaResultadoLucro" style="display:none;margin-bottom:10px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+          <div style="background:rgba(0,201,123,0.07);border:1px solid rgba(0,201,123,0.22);border-radius:12px;padding:12px 14px;">
+            <div style="font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Lucro em %</div>
+            <div id="metaLucroResultPct" style="font-family:var(--font-mono);font-size:1.35rem;color:var(--verde);font-weight:700;">—</div>
+          </div>
+          <div style="background:rgba(0,201,123,0.07);border:1px solid rgba(0,201,123,0.22);border-radius:12px;padding:12px 14px;">
+            <div style="font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Lucro em R$</div>
+            <div id="metaLucroResultReais" style="font-family:var(--font-mono);font-size:1.15rem;color:var(--verde);font-weight:700;">—</div>
+          </div>
+        </div>
+
+        <!-- Status da meta -->
+        <div id="metaStatusBloco" style="margin-bottom:10px;"></div>
+      </div>
+
+      <!-- Meta sugerida pelo sistema (sempre visível quando há custos) -->
+      <div id="metaSugeridaBloco" style="margin-bottom:10px;"></div>
+
+      <!-- Faixa saudável -->
+      <div id="metaViabilidadeDisplay" style="margin-top:2px;"></div>
+      <div id="metaSugeridaDisplay" style="display:none;"></div><!-- mantido para compat -->
+
+      <!-- Alertas de margem (mantido para compat) -->
+      <div id="metaLucroMaxAlerta" style="display:none;"></div>
+      <span id="metaMargemSugeridaDisplay" style="display:none;">—</span>
+
+      <div style="font-size:0.68rem;color:var(--muted);line-height:1.55;padding:6px 2px 2px;border-top:1px solid var(--border);margin-top:10px;">
+        💡 Digite sua <strong style="color:var(--text);">meta total de faturamento</strong> — o sistema calcula automaticamente o lucro e mostra se a meta é saudável.
+      </div>
+    </div>
+
+    <div class="card" id="metaAnoAnteriorCard" style="display:none;">
+      <div class="card-title"><span class="dot" style="background:var(--roxo)"></span> Comparação — Ano Anterior</div>
+      <label>Faturamento do mesmo mês (ano anterior) — R$</label>
+      <input type="text" inputmode="decimal" id="metaAnoAnterior" placeholder="Ex: 280000">
+      <label>Mês de referência</label>
+      <select id="metaMesRef" style="margin-bottom:0;">
+        <option value="">Selecione...</option>
+        <option>Janeiro</option><option>Fevereiro</option><option>Março</option>
+        <option>Abril</option><option>Maio</option><option>Junho</option>
+        <option>Julho</option><option>Agosto</option><option>Setembro</option>
+        <option>Outubro</option><option>Novembro</option><option>Dezembro</option>
+      </select>
+    </div>
+    <button type="button" onclick="toggleAnoAnterior()" id="btnAnoAnterior" style="background:transparent;border:1px solid var(--border);border-radius:10px;color:var(--muted);font-family:var(--font-body);font-size:0.78rem;width:100%;padding:9px;cursor:pointer;transition:all 0.2s;margin-bottom:14px;" onmouseover="this.style.borderColor='var(--roxo)';this.style.color='var(--roxo)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">📅 + Adicionar comparação com ano anterior</button>
+
+    <button class="btn-pdf" onclick="gerarPDFMetaDireto()" style="margin-bottom:10px;">📄 Exportar Meta em PDF</button>
+    <button class="btn-primary" onclick="calcularMeta()">🎯 Calcular Meta de Faturamento</button>
+    <div id="metaResultado" class="result-section hidden"></div>
+    <button class="btn-secondary" onclick="switchMetaTab('projecao')" style="margin-top:10px;">Próximo: Projeção →</button>
+  </div>
+
+  <!-- RELATÓRIO COMPLETO -->
+  <div class="panel" id="panel-relatorio-geral">
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:var(--roxo)"></span> Relatório Completo</div>
+      <div class="tip" style="border-color:rgba(167,139,250,0.3);background:rgba(167,139,250,0.08);color:#c4b5fd;">
+        📊 Gera um PDF completo com todas as promoções cadastradas + os dados de meta da filial ativa. Preencha as abas de Promoções e Meta antes de exportar.
+      </div>
+
+      <div id="relatorioResumo" style="margin-bottom:14px;"></div>
+
+      <label>Título do relatório (opcional)</label>
+      <input type="text" id="relatorioTitulo" placeholder="Ex: Relatório Mensal — Abril 2025">
+
+      <label>Responsável</label>
+      <input type="text" id="relatorioResponsavel" placeholder="Ex: Mayara Almeida" value="Mayara Almeida">
+
+      <label>Observações (opcional)</label>
+      <input type="text" id="relatorioObs" placeholder="Ex: Dados referentes à Loja Centro">
+
+      <div style="display:flex;gap:8px;margin-top:6px;">
+        <div style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px;text-align:center;">
+          <div style="font-size:0.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Promoções</div>
+          <div id="relat-count-promos" style="font-family:var(--font-mono);font-size:1.2rem;color:var(--amarelo);font-weight:600;">0</div>
+        </div>
+        <div style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px;text-align:center;">
+          <div style="font-size:0.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Meta</div>
+          <div id="relat-count-meta" style="font-family:var(--font-mono);font-size:1.2rem;color:var(--verde);font-weight:600;">—</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-pdf" onclick="gerarRelatorioCompleto()" style="border-color:rgba(167,139,250,0.5);color:var(--roxo);font-size:0.92rem;padding:14px;margin-bottom:8px;">
+      📄 Exportar Relatório Completo em PDF
+    </button>
+    <button class="btn-secondary" onclick="atualizarResumoRelatorio()">↻ Atualizar resumo</button>
+  </div>
+
+</div><!-- /.app -->
 
 <script>
   const STORAGE_KEY = 'dealMetricsProdutos';
@@ -262,16 +631,127 @@
 
   function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(produtos)); }
 
-  function switchTab(tab) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-    const tabs = ['calcular','lista','importar'];
-    document.querySelectorAll('.tab')[tabs.indexOf(tab)].classList.add('active');
-    document.getElementById('panel-' + tab).classList.add('active');
-    if (tab === 'lista') renderLista();
+  const _promoTabs = ['calcular','lista','importar'];
+  const _metaTabs  = ['filiais','fixos','variaveis','metadesejada','projecao','vendedores-proj'];
+  const _relatTabs = ['relatorio-geral'];
+
+  function switchGroup(group) {
+    document.getElementById('grp-promo').classList.toggle('active', group === 'promo');
+    document.getElementById('grp-meta').classList.toggle('active', group === 'meta');
+    document.getElementById('grp-relatorio').classList.toggle('active', group === 'relatorio');
+    document.getElementById('subtabs-promo').style.display     = group === 'promo'     ? 'flex' : 'none';
+    document.getElementById('subtabs-meta').style.display      = group === 'meta'      ? 'flex' : 'none';
+    document.getElementById('subtabs-relatorio').style.display = group === 'relatorio' ? 'flex' : 'none';
+    if (group === 'promo') switchTab('calcular');
+    else if (group === 'meta') switchMetaTab('filiais');
+    else switchRelatTab('relatorio-geral');
   }
 
-  function fmt(v) { return 'R$ ' + parseFloat(v).toFixed(2).replace('.', ','); }
+  function switchRelatTab(tab) {
+    [..._promoTabs, ..._metaTabs, ..._relatTabs].forEach(t => {
+      const p = document.getElementById('panel-' + t);
+      if (p) p.classList.remove('active');
+    });
+    _relatTabs.forEach(t => {
+      const el = document.getElementById('tab-' + t);
+      if (el) el.classList.toggle('active', t === tab);
+    });
+    const panel = document.getElementById('panel-' + tab);
+    if (panel) panel.classList.add('active');
+    atualizarResumoRelatorio();
+  }
+
+  function switchTab(tab) {
+    [..._promoTabs, ..._metaTabs, ..._relatTabs].forEach(t => {
+      const p = document.getElementById('panel-' + t);
+      if (p) p.classList.remove('active');
+    });
+    _promoTabs.forEach(t => {
+      const el = document.getElementById('tab-' + t);
+      if (el) el.classList.toggle('active', t === tab);
+    });
+    const panel = document.getElementById('panel-' + tab);
+    if (panel) panel.classList.add('active');
+    if (tab === 'lista') renderLista();
+    try { saveFiliais(); } catch(e) {}
+  }
+
+  function switchMetaTab(tab) {
+    [..._promoTabs, ..._metaTabs, ..._relatTabs].forEach(t => {
+      const p = document.getElementById('panel-' + t);
+      if (p) p.classList.remove('active');
+    });
+    _metaTabs.forEach(t => {
+      const el = document.getElementById('tab-' + t);
+      if (el) el.classList.toggle('active', t === tab);
+    });
+    const panel = document.getElementById('panel-' + tab);
+    if (panel) panel.classList.add('active');
+    try { saveFiliais(); } catch(e) {}
+  }
+
+  function fmt(v) { const n = parseFloat(v) || 0; return 'R$ ' + n.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2}); }
+
+  // ── SMART INPUT PARSER ──
+  // Accepts: "800k", "800.000", "800,000", "800000", "1.5k", "2.3m", "R$ 800.000,00"
+  function parseMoney(raw) {
+    if (!raw && raw !== 0) return NaN;
+    let s = String(raw).trim();
+    // Remove R$ and spaces
+    s = s.replace(/R\$\s*/gi, '').trim();
+    // Handle shorthand: 800k, 1.5k, 2m, 1.2m
+    const shortMatch = s.match(/^([0-9]+(?:[.,][0-9]*)?)([km]?)$/i);
+    if (shortMatch) {
+      let num = parseFloat(shortMatch[1].replace(',', '.'));
+      const suffix = shortMatch[2].toLowerCase();
+      if (suffix === 'k') num *= 1000;
+      else if (suffix === 'm') num *= 1000000;
+      return isNaN(num) ? NaN : num;
+    }
+    // Brazilian format: 800.000,00 or 800.000
+    // If string has both . and , → pt-BR: dot=thousands, comma=decimal
+    if (s.includes('.') && s.includes(',')) {
+      s = s.replace(/\./g, '').replace(',', '.');
+    } else if (s.includes(',') && !s.includes('.')) {
+      // Could be decimal comma: 800,00 or thousands: 800,000
+      const parts = s.split(',');
+      if (parts[1] && parts[1].length === 3) {
+        // thousands separator
+        s = s.replace(',', '');
+      } else {
+        s = s.replace(',', '.');
+      }
+    } else if (s.includes('.')) {
+      // Could be thousands dot: 800.000 or decimal: 3.99
+      const parts = s.split('.');
+      if (parts[1] && parts[1].length === 3) {
+        // thousands separator
+        s = s.replace('.', '');
+      }
+      // else leave as-is (normal decimal)
+    }
+    return parseFloat(s);
+  }
+
+  function getMetaVal(id) {
+    const el = document.getElementById(id);
+    if (!el) return 0;
+    const v = parseMoney(el.value);
+    return isNaN(v) ? 0 : v;
+  }
+
+  function smartParseInput(el) {
+    const raw = el.value.trim();
+    if (!raw) return;
+    const val = parseMoney(raw);
+    if (!isNaN(val) && val >= 0) {
+      el.value = val % 1 === 0 ? val.toFixed(0) : val.toFixed(2);
+      // Show formatted hint briefly in placeholder
+      el.setAttribute('data-parsed', val);
+    } else {
+      el.value = '';
+    }
+  }
 
   // ── GERENCIAMENTO DE CONCORRENTES ──
   let _concorrentes = [{ nome: '', preco: '' }];
@@ -283,7 +763,7 @@
       <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-bottom:8px;align-items:start;">
         <div>
           ${i === 0 ? '<label style="font-size:0.7rem;color:var(--muted);">Nome</label>' : ''}
-          <input type="text" placeholder="Ex: Drogasil" value="${c.nome}"
+          <input type="text" placeholder="Ex: Loja X" value="${c.nome}"
             oninput="_concorrentes[${i}].nome=this.value"
             style="margin-bottom:0;${i>0?'margin-top:0;':''}">
         </div>
@@ -322,7 +802,7 @@
     const meuPrecoVendaInput = parseFloat(document.getElementById('meuPrecoVenda').value);
     const margemMin = parseFloat(document.getElementById('margemMin').value) || 15;
 
-    if (!nome) { alert('Informe o nome do medicamento.'); return; }
+    if (!nome) { alert('Informe o nome do produto.'); return; }
     if (!custo || custo <= 0) { alert('Informe o preço de custo.'); return; }
 
     // Filtra concorrentes válidos
@@ -678,7 +1158,7 @@
   function renderLista() {
     const container = document.getElementById('listaMeds');
     if (produtos.length === 0) {
-      container.innerHTML = `<div class="empty"><div class="empty-icon">💊</div><div class="empty-text">Nenhum produto ainda.<br>Calcule um medicamento para ele aparecer aqui.</div></div>`;
+      container.innerHTML = `<div class="empty"><div class="empty-icon">📦</div><div class="empty-text">Nenhum produto ainda.<br>Calcule um produto para ele aparecer aqui.</div></div>`;
       return;
     }
     const now = Date.now();
@@ -754,7 +1234,7 @@
       const iNomeConc = header.findIndex((h, i) => i !== iNome && i !== iCusto && i !== iConc && (
         h.includes('farmacia') || h.includes('loja') || h.includes('concorrente') || h.includes('conc') || h.includes('nome')));
 
-      if (iNome < 0) { alert('Coluna de nome não encontrada. Use: nome, produto, medicamento ou item.'); return; }
+      if (iNome < 0) { alert('Coluna de nome não encontrada. Use: nome, produto, item ou descricao.'); return; }
       if (iCusto < 0) { alert('Coluna de custo não encontrada. Use: custo, meu preco ou preco compra.'); return; }
       if (iConc < 0) { alert('Coluna do concorrente não encontrada. Use: concorrente, conc ou preco.'); return; }
       let importados = 0;
@@ -866,7 +1346,7 @@
     // Promotions
     y += 10;
     if (y > 250) { doc.addPage(); y = 20; }
-    doc.setTextColor(255, 210, 63);
+    doc.setTextColor(20, 20, 20);
     doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
     doc.text('Promocoes Sugeridas por Produto', 12, y);
@@ -907,7 +1387,7 @@
         y += 8;
         if (y > 250) { doc.addPage(); y = 20; }
 
-        doc.setTextColor(0, 201, 123);
+        doc.setTextColor(20, 20, 20);
         doc.setFontSize(13);
         doc.setFont('helvetica', 'bold');
         doc.text('Minha Promocao', 12, y);
@@ -977,7 +1457,8 @@
       doc.text(`${i} / ${pageCount}`, W - 15, 290, { align: 'right' });
     }
 
-    doc.save(`dealmetrics-${new Date().toISOString().slice(0,10)}.pdf`);
+    const _fn1 = `dealmetrics-${new Date().toISOString().slice(0,10)}.pdf`;
+    try { const _b=doc.output('blob'),_u=URL.createObjectURL(_b),_a=document.createElement('a'); _a.href=_u; _a.download=_fn1; document.body.appendChild(_a); _a.click(); setTimeout(()=>{URL.revokeObjectURL(_u);document.body.removeChild(_a);},2000); } catch(e){ doc.save(_fn1); }
   }
 
   function baixarModelo() {
@@ -994,6 +1475,2088 @@
     a.click();
     document.body.removeChild(a);
     setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  // ── META DE FATURAMENTO — SISTEMA DE FILIAIS ──
+
+  function criarFilialVazia(nome, idx) {
+    return {
+      nome: nome || ('Filial ' + (idx + 1)),
+      aluguel: '', internet: '', luz: '', sistema: '', contador: '',
+      fatRef: '', cmvR: '', cartaoR: '', comissR: '',
+      lucro: '10',
+      vendaDiariaMin: '', vendaDiariaMax: '', vendaReal: '', vendaRealLiq: '',
+      acumBruto: '', acumLiq: '',
+      metaDesejada: '',
+      anoAnterior: '', mesRef: '',
+      funcionarios: [{ nome: '', cargo: '', bruto: '', descontos: '', beneficios: '' }],
+      outrosFixos: [],
+      vendedores: []
+    };
+  }
+
+  const FILIAIS_KEY = 'dealMetricsFiliais';
+
+  function saveFiliais() {
+    try {
+      salvarFilialAtiva();
+      localStorage.setItem(FILIAIS_KEY, JSON.stringify(_filiais));
+    } catch(e) { /* silent */ }
+  }
+
+  function loadFiliais() {
+    try {
+      const raw = localStorage.getItem(FILIAIS_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        _filiais = parsed.map(f => ({
+          ...criarFilialVazia(f.nome, 0),
+          ...f,
+          funcionarios: f.funcionarios || [{ nome:'', cargo:'', bruto:'', descontos:'', beneficios:'' }],
+          outrosFixos:  f.outrosFixos  || [],
+          vendedores:   f.vendedores   || [],
+          outrosVariaveis: f.outrosVariaveis || [],
+        }));
+        _filialAtiva = 0;
+        _funcionarios     = _filiais[0].funcionarios;
+        _outrosFixos      = _filiais[0].outrosFixos;
+        _vendedores       = _filiais[0].vendedores;
+        _outrosVariaveis  = _filiais[0].outrosVariaveis || [];
+      }
+    } catch(e) { /* silent */ }
+  }
+
+  let _filiais = [criarFilialVazia('Filial 1', 0)];
+  let _filialAtiva = 0;
+
+  // ponteiros para a filial ativa
+  let _funcionarios = _filiais[0].funcionarios;
+  let _outrosFixos  = _filiais[0].outrosFixos;
+  let _vendedores   = _filiais[0].vendedores;
+  let _outrosVariaveis = [];
+
+  function renderFilialTabs() {
+    const container = document.getElementById('filialTabsContainer');
+    if (!container) return;
+    container.innerHTML = _filiais.map((f, i) => {
+      const ativa = i === _filialAtiva;
+      return '<button type="button" onclick="trocarFilial(' + i + ')" style="padding:6px 12px;border-radius:20px;font-size:0.75rem;font-weight:700;font-family:var(--font-display);cursor:pointer;border:1px solid ' + (ativa ? 'var(--verde)' : 'var(--border)') + ';background:' + (ativa ? 'var(--verde)' : 'var(--surface2)') + ';color:' + (ativa ? '#000' : 'var(--muted)') + ';transition:all 0.2s;">' + (f.nome || ('Filial ' + (i+1))) + '</button>';
+    }).join('');
+    const btnCons = document.getElementById('btnConsolidado');
+    if (btnCons) btnCons.style.display = _filiais.length > 1 ? '' : 'none';
+    // Show/hide the delete button inside the form
+    const btnDel = document.getElementById('btnExcluirFilial');
+    if (btnDel) {
+      if (_filiais.length > 1) btnDel.classList.remove('hidden');
+      else btnDel.classList.add('hidden');
+    }
+  }
+
+  function adicionarFilial() {
+    salvarFilialAtiva();
+    const nova = criarFilialVazia('Filial ' + (_filiais.length + 1), _filiais.length);
+    _filiais.push(nova);
+    _filialAtiva = _filiais.length - 1;
+    carregarFilialAtiva();
+    renderFilialTabs();
+    saveFiliais();
+  }
+
+  function trocarFilial(idx) {
+    salvarFilialAtiva();
+    saveFiliais();
+    fecharConsolidado();
+    _filialAtiva = idx;
+    carregarFilialAtiva();
+    renderFilialTabs();
+  }
+
+  function mostrarConfirmExcluir() {
+    const box = document.getElementById('confirmExcluirBox');
+    if (box) box.style.display = '';
+  }
+
+  function cancelarExcluirFilial() {
+    const box = document.getElementById('confirmExcluirBox');
+    if (box) box.style.display = 'none';
+  }
+
+  function executarExcluirFilial() {
+    cancelarExcluirFilial();
+    if (_filiais.length <= 1) return;
+    salvarFilialAtiva();
+    _filiais.splice(_filialAtiva, 1);
+    _filialAtiva = Math.max(0, _filialAtiva - 1);
+    _funcionarios = _filiais[_filialAtiva].funcionarios;
+    _outrosFixos  = _filiais[_filialAtiva].outrosFixos;
+    _vendedores   = _filiais[_filialAtiva].vendedores;
+    carregarFilialAtiva();
+    renderFilialTabs();
+    saveFiliais();
+  }
+
+  function removerFilialAtiva() {
+    mostrarConfirmExcluir();
+  }
+
+  function atualizarNomeFilialAtiva() {
+    const nome = document.getElementById('metaFilial').value.trim();
+    if (_filiais[_filialAtiva]) {
+      _filiais[_filialAtiva].nome = nome;
+      renderFilialTabs();
+    }
+  }
+
+  function salvarFilialAtiva() {
+    const f = _filiais[_filialAtiva];
+    if (!f) return;
+    f.nome       = (document.getElementById('metaFilial')?.value || '').trim() || f.nome;
+    f.aluguel    = document.getElementById('metaAluguel')?.value || '';
+    f.internet   = document.getElementById('metaInternet')?.value || '';
+    f.luz        = document.getElementById('metaLuz')?.value || '';
+    f.sistema    = document.getElementById('metaSistema')?.value || '';
+    f.contador   = document.getElementById('metaContador')?.value || '';
+    f.fatRef     = document.getElementById('metaFatRef')?.value || '';
+    f.fatRefMeta = document.getElementById('metaFatRefMeta')?.value || '';
+    f.cmvR       = document.getElementById('metaCMVReais')?.value || '';
+    f.cartaoR    = document.getElementById('metaCartaoReais')?.value || '';
+    f.comissR    = document.getElementById('metaComissoesReais')?.value || '';
+    f.lucro      = document.getElementById('metaLucro')?.value || '10';
+    f.vendaDiariaMin = document.getElementById('metaVendaDiariaMin')?.value || '';
+    f.vendaDiariaMax = document.getElementById('metaVendaDiariaMax')?.value || '';
+    f.vendaReal      = document.getElementById('metaVendaReal')?.value || '';
+    f.vendaRealLiq   = document.getElementById('metaVendaRealLiq')?.value || '';
+    f.acumBruto      = document.getElementById('metaAcumBruto')?.value || '';
+    f.acumLiq        = document.getElementById('metaAcumLiq')?.value || '';
+    f.diasRestantes  = document.getElementById('diasRestantes')?.value || '';
+    f.metaDesejada   = document.getElementById('metaDesejada')?.value || '';
+    f.anoAnterior    = document.getElementById('metaAnoAnterior')?.value || '';
+    f.mesRef         = document.getElementById('metaMesRef')?.value || '';
+    f.folhaPagamento = document.getElementById('metaFolhaPagamento')?.value || '';
+    f.modoFolha      = _modoFolha;
+    f.funcionarios = JSON.parse(JSON.stringify(_funcionarios));
+    f.outrosFixos  = JSON.parse(JSON.stringify(_outrosFixos));
+    f.vendedores   = JSON.parse(JSON.stringify(_vendedores));
+    f.outrosVariaveis = JSON.parse(JSON.stringify(_outrosVariaveis));
+  }
+
+  function carregarFilialAtiva() {
+    const f = _filiais[_filialAtiva];
+    if (!f) return;
+    _funcionarios = f.funcionarios;
+    _outrosFixos  = f.outrosFixos;
+    _vendedores   = f.vendedores;
+    const setVal = (id, v) => { const e = document.getElementById(id); if (e) e.value = v || ''; };
+    setVal('metaFilial', f.nome);
+    setVal('metaAluguel', f.aluguel);
+    setVal('metaInternet', f.internet);
+    setVal('metaLuz', f.luz);
+    setVal('metaSistema', f.sistema);
+    setVal('metaContador', f.contador);
+    setVal('metaFatRef', f.fatRef);
+    setVal('metaFatRefMeta', f.fatRefMeta || f.fatRef);
+    setVal('metaCMVReais', f.cmvR);
+    setVal('metaCartaoReais', f.cartaoR);
+    setVal('metaComissoesReais', f.comissR);
+    setVal('metaLucro', f.lucro || '10');
+    setVal('metaVendaDiariaMin', f.vendaDiariaMin);
+    setVal('metaVendaDiariaMax', f.vendaDiariaMax);
+    setVal('metaVendaReal', f.vendaReal);
+    setVal('metaVendaRealLiq', f.vendaRealLiq);
+    setVal('metaAcumBruto', f.acumBruto);
+    setVal('metaAcumLiq', f.acumLiq);
+    setVal('diasRestantes', f.diasRestantes);
+    setVal('metaDesejada', f.metaDesejada);
+    setVal('metaAnoAnterior', f.anoAnterior);
+    setVal('metaMesRef', f.mesRef);
+    setVal('metaFolhaPagamento', f.folhaPagamento);
+    _modoFolha = f.modoFolha || false;
+    if (_modoFolha) toggleModoFolha(); else toggleModoIndividual();
+    renderFuncionarios();
+    renderOutrosFixos();
+    renderVendedores();
+    atualizarTotais();
+    document.getElementById('metaResultado').classList.add('hidden');
+  }
+
+  function verConsolidado() {
+    salvarFilialAtiva();
+    const panel = document.getElementById('consolidadoPanel');
+    const form  = document.getElementById('filialFormPanel');
+    if (!panel || !form) return;
+    panel.style.display = '';
+    form.style.display  = 'none';
+    renderConsolidado();
+  }
+
+  function fecharConsolidado() {
+    const panel = document.getElementById('consolidadoPanel');
+    const form  = document.getElementById('filialFormPanel');
+    if (!panel || !form) return;
+    panel.style.display = 'none';
+    form.style.display  = '';
+  }
+
+  function calcularDadosFilial(f) {
+    const aluguel  = parseFloat(f.aluguel)  || 0;
+    const internet = parseFloat(f.internet) || 0;
+    const luz      = parseFloat(f.luz)      || 0;
+    const sistema  = parseFloat(f.sistema)  || 0;
+    const contador = parseFloat(f.contador) || 0;
+    const salarios = f.funcionarios.reduce((a, x) => a + custoLiquidoFunc(x), 0);
+    const outrosF  = f.outrosFixos.reduce((a, x) => a + (parseFloat(x.valor) || 0), 0);
+    const totalFixos = aluguel + internet + luz + sistema + contador + salarios + outrosF;
+
+    const fatRef    = parseFloat(f.fatRef)  || 0;
+    const cmvR      = parseFloat(f.cmvR)    || 0;
+    const cartaoR   = parseFloat(f.cartaoR) || 0;
+    const comissR   = parseFloat(f.comissR) || 0;
+    const totalVarR = cmvR + cartaoR + comissR;
+    const totalVarPct = fatRef > 0 ? (totalVarR / fatRef) * 100 : 0;
+    const lucroDesejadoPct = parseFloat(f.lucro) || 0;
+    const margemContr = 100 - totalVarPct;
+    const margemLivre = margemContr - lucroDesejadoPct;
+    const metaFaturamento = (totalFixos > 0 && margemLivre > 0) ? totalFixos / (margemLivre / 100) : 0;
+    return { totalFixos, totalVarR, totalVarPct, metaFaturamento, lucroDesejadoPct, margemLivre, margemContr };
+  }
+
+  function renderConsolidado() {
+    const el = document.getElementById('consolidadoResultado');
+    if (!el) return;
+    const fmtR = v => fmt(v||0);
+
+    let totalFixosEmp = 0, totalVarREmp = 0, metaEmp = 0;
+    const rows = _filiais.map(f => {
+      const d = calcularDadosFilial(f);
+      totalFixosEmp += d.totalFixos;
+      totalVarREmp  += d.totalVarR;
+      metaEmp       += d.metaFaturamento;
+      return d;
+    });
+
+    const filialRows = _filiais.map((f, i) => {
+      const d = rows[i];
+      const metaOk = d.metaFaturamento > 0;
+      return '<div style="background:var(--surface2);border-radius:12px;padding:12px 14px;margin-bottom:8px;">' +
+        '<div style="font-family:var(--font-display);font-weight:700;font-size:0.85rem;color:var(--text);margin-bottom:8px;">' + (f.nome || ('Filial ' + (i+1))) + '</div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">' +
+          '<div style="text-align:center;"><div style="font-size:0.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:2px;">Fixos</div><div style="font-family:var(--font-mono);font-size:0.85rem;color:var(--azul);">' + fmtR(d.totalFixos) + '</div></div>' +
+          '<div style="text-align:center;"><div style="font-size:0.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:2px;">Variáveis</div><div style="font-family:var(--font-mono);font-size:0.85rem;color:var(--amarelo);">' + fmtR(d.totalVarR) + '</div></div>' +
+          '<div style="text-align:center;"><div style="font-size:0.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:2px;">Meta</div><div style="font-family:var(--font-mono);font-size:0.85rem;color:' + (metaOk ? 'var(--verde)' : 'var(--muted)') + ';">' + (metaOk ? fmtR(d.metaFaturamento) : '—') + '</div></div>' +
+        '</div>' +
+        '<button type="button" onclick="trocarFilial(' + i + ');fecharConsolidado();" style="margin-top:8px;width:100%;padding:6px;background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:0.72rem;cursor:pointer;">✏️ Editar filial</button>' +
+      '</div>';
+    }).join('');
+
+    el.innerHTML =
+      '<div style="background:rgba(0,201,123,0.08);border:1px solid rgba(0,201,123,0.25);border-radius:16px;padding:16px;margin-bottom:14px;">' +
+        '<div style="font-family:var(--font-display);font-weight:800;font-size:0.85rem;color:var(--verde);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">🏢 Empresa — Consolidado (' + _filiais.length + ' filiais)</div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">' +
+          '<div style="background:rgba(26,115,232,0.12);border-radius:12px;padding:12px;text-align:center;"><div style="font-size:0.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:4px;">Total Fixos</div><div style="font-family:var(--font-mono);font-size:1rem;color:var(--azul);font-weight:600;">' + fmtR(totalFixosEmp) + '</div></div>' +
+          '<div style="background:rgba(255,210,63,0.1);border-radius:12px;padding:12px;text-align:center;"><div style="font-size:0.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:4px;">Total Variáveis</div><div style="font-family:var(--font-mono);font-size:1rem;color:var(--amarelo);font-weight:600;">' + fmtR(totalVarREmp) + '</div></div>' +
+          '<div style="background:rgba(0,201,123,0.1);border-radius:12px;padding:12px;text-align:center;"><div style="font-size:0.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:4px;">Meta Total</div><div style="font-family:var(--font-mono);font-size:1rem;color:var(--verde);font-weight:600;">' + fmtR(metaEmp) + '</div></div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="font-family:var(--font-display);font-weight:700;font-size:0.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Detalhamento por filial</div>' +
+      filialRows;
+  }
+
+  // ── RENDER HELPERS ──
+  function custoLiquidoFunc(f) {
+    const bruto     = parseMoney(f.bruto)     || 0;
+    const descontos = parseMoney(f.descontos) || 0;
+    const beneficios= parseMoney(f.beneficios)|| 0;
+    return Math.max(0, bruto - descontos) + beneficios;
+  }
+
+  function renderFuncionarios() {
+    const lista = document.getElementById('funcionariosLista');
+    if (!lista) return;
+    lista.innerHTML = _funcionarios.map((f, i) => {
+      const liquido = custoLiquidoFunc(f);
+      const temDados = (parseMoney(f.bruto)||0) > 0;
+      return `
+      <div style="background:var(--surface2);border-radius:12px;padding:12px;margin-bottom:10px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:6px;margin-bottom:8px;align-items:end;">
+          <div>
+            ${i === 0 ? '<label style="font-size:0.68rem;color:var(--muted);margin-bottom:4px;display:block;">Nome</label>' : ''}
+            <input type="text" placeholder="Ex: Maria" value="${f.nome}"
+              oninput="_funcionarios[${i}].nome=this.value" style="margin-bottom:0;">
+          </div>
+          <div>
+            ${i === 0 ? '<label style="font-size:0.68rem;color:var(--muted);margin-bottom:4px;display:block;">Cargo</label>' : ''}
+            <input type="text" placeholder="Ex: Farmacêutica" value="${f.cargo}"
+              oninput="_funcionarios[${i}].cargo=this.value" style="margin-bottom:0;">
+          </div>
+          <div${i === 0 ? ' style="padding-top:20px;"' : ''}>
+            ${_funcionarios.length > 1
+              ? `<button type="button" onclick="removerFuncionario(${i})" style="background:rgba(255,75,75,0.1);border:1px solid rgba(255,75,75,0.25);border-radius:8px;color:var(--vermelho);font-size:0.8rem;padding:9px 10px;cursor:pointer;line-height:1;">✕</button>`
+              : '<div style="width:34px;"></div>'}
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
+          <div>
+            <label style="font-size:0.68rem;color:var(--muted);margin-bottom:4px;display:block;">Salário bruto (R$)</label>
+            <input type="text" inputmode="decimal" placeholder="Ex: 3000" value="${f.bruto}"
+              onblur="smartParseInput(this)" oninput="_funcionarios[${i}].bruto=this.value;atualizarTotais();atualizarLiquidoFunc(${i})" style="margin-bottom:0;">
+          </div>
+          <div>
+            <label style="font-size:0.68rem;color:var(--muted);margin-bottom:4px;display:block;">Descontos totais (R$)</label>
+            <input type="text" inputmode="decimal" placeholder="INSS, IR..." value="${f.descontos}"
+              onblur="smartParseInput(this)" oninput="_funcionarios[${i}].descontos=this.value;atualizarTotais();atualizarLiquidoFunc(${i})" style="margin-bottom:0;">
+          </div>
+          <div>
+            <label style="font-size:0.68rem;color:var(--muted);margin-bottom:4px;display:block;">Benefícios (R$)</label>
+            <input type="text" inputmode="decimal" placeholder="VT, VR..." value="${f.beneficios}"
+              onblur="smartParseInput(this)" oninput="_funcionarios[${i}].beneficios=this.value;atualizarTotais();atualizarLiquidoFunc(${i})" style="margin-bottom:0;">
+          </div>
+        </div>
+        <div id="liquidoFunc_${i}" style="margin-top:8px;${temDados ? '' : 'display:none;'}background:rgba(0,201,123,0.08);border:1px solid rgba(0,201,123,0.2);border-radius:8px;padding:7px 10px;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;">Custo real p/ empresa</span>
+          <span style="font-family:var(--font-mono);font-size:0.9rem;color:var(--verde);font-weight:600;">${fmt(liquido)}</span>
+        </div>
+      </div>`;
+    }).join('');
+    atualizarTotais();
+  }
+
+  function atualizarLiquidoFunc(i) {
+    const f = _funcionarios[i];
+    if (!f) return;
+    const liquido = custoLiquidoFunc(f);
+    const temDados = (parseMoney(f.bruto)||0) > 0;
+    const el = document.getElementById('liquidoFunc_' + i);
+    if (!el) return;
+    el.style.display = temDados ? 'flex' : 'none';
+    const span = el.querySelector('span:last-child');
+    if (span) span.textContent = fmt(liquido);
+  }
+
+  let _modoFolha = false;
+
+  function toggleModoFolha() {
+    _modoFolha = true;
+    document.getElementById('modoFolhaDiv').style.display = '';
+    document.getElementById('modoIndividualDiv').style.display = 'none';
+    document.getElementById('btnModoFolha').style.background = 'rgba(26,115,232,0.25)';
+    document.getElementById('btnModoFolha').style.borderColor = 'var(--azul)';
+    document.getElementById('btnModoIndividual').style.background = 'transparent';
+    document.getElementById('btnModoIndividual').style.color = 'var(--muted)';
+    document.getElementById('btnModoIndividual').style.borderColor = 'var(--border)';
+    atualizarTotais();
+  }
+
+  function toggleModoIndividual() {
+    _modoFolha = false;
+    document.getElementById('modoFolhaDiv').style.display = 'none';
+    document.getElementById('modoIndividualDiv').style.display = '';
+    document.getElementById('btnModoIndividual').style.background = 'rgba(26,115,232,0.25)';
+    document.getElementById('btnModoIndividual').style.borderColor = 'var(--azul)';
+    document.getElementById('btnModoIndividual').style.color = 'var(--azul)';
+    document.getElementById('btnModoFolha').style.background = 'rgba(26,115,232,0.12)';
+    document.getElementById('btnModoFolha').style.borderColor = 'rgba(26,115,232,0.35)';
+    atualizarTotais();
+  }
+
+  function adicionarFuncionario() { _funcionarios.push({ nome:'', cargo:'', bruto:'', descontos:'', beneficios:'' }); renderFuncionarios(); }
+  function removerFuncionario(i)  { _funcionarios.splice(i,1); renderFuncionarios(); }
+
+  function renderOutrosFixos() {
+    const lista = document.getElementById('outrosFixosLista');
+    if (!lista) return;
+    lista.innerHTML = _outrosFixos.map((o, i) => `
+      <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:6px;margin-bottom:8px;align-items:end;">
+        <div>
+          ${i === 0 ? '<label style="font-size:0.68rem;color:var(--muted);">Descrição</label>' : ''}
+          <input type="text" placeholder="Ex: Seguro" value="${o.nome}"
+            oninput="_outrosFixos[${i}].nome=this.value" style="margin-bottom:0;">
+        </div>
+        <div>
+          ${i === 0 ? '<label style="font-size:0.68rem;color:var(--muted);">Valor (R$)</label>' : ''}
+          <input type="text" inputmode="decimal" placeholder="Ex: 500 ou 1k" value="${o.valor}"
+            onblur="smartParseInput(this)" oninput="_outrosFixos[${i}].valor=this.value;atualizarTotais()" style="margin-bottom:0;">
+        </div>
+        <div>
+          <button type="button" onclick="removerOutroFixo(${i})" style="background:rgba(255,75,75,0.1);border:1px solid rgba(255,75,75,0.25);border-radius:8px;color:var(--vermelho);font-size:0.8rem;padding:9px 10px;cursor:pointer;line-height:1;">✕</button>
+        </div>
+      </div>`).join('');
+    atualizarTotais();
+  }
+
+  function adicionarOutroFixo() { _outrosFixos.push({ nome:'', valor:'' }); renderOutrosFixos(); }
+  function removerOutroFixo(i)  { _outrosFixos.splice(i,1); renderOutrosFixos(); }
+
+  function renderOutrosVariaveis() {
+    const lista = document.getElementById('outrosVariaveisLista');
+    if (!lista) return;
+    if (_outrosVariaveis.length === 0) { lista.innerHTML = ''; atualizarTotais(); return; }
+    lista.innerHTML = _outrosVariaveis.map((o, i) => `
+      <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:6px;margin-bottom:8px;align-items:end;">
+        <div>
+          ${i === 0 ? '<label style="font-size:0.68rem;color:var(--muted);">Descrição</label>' : ''}
+          <input type="text" placeholder="Ex: Frete" value="${o.nome}"
+            oninput="_outrosVariaveis[${i}].nome=this.value" style="margin-bottom:0;">
+        </div>
+        <div>
+          ${i === 0 ? '<label style="font-size:0.68rem;color:var(--muted);">Valor R$/mês</label>' : ''}
+          <input type="text" inputmode="decimal" placeholder="Ex: 800" value="${o.valor}"
+            onblur="smartParseInput(this)" oninput="_outrosVariaveis[${i}].valor=this.value;atualizarTotais()" style="margin-bottom:0;">
+        </div>
+        <div>
+          <button type="button" onclick="removerOutroVariavel(${i})" style="background:rgba(255,75,75,0.1);border:1px solid rgba(255,75,75,0.25);border-radius:8px;color:var(--vermelho);font-size:0.8rem;padding:9px 10px;cursor:pointer;line-height:1;">✕</button>
+        </div>
+      </div>`).join('');
+    atualizarTotais();
+  }
+
+  function adicionarOutroVariavel() { _outrosVariaveis.push({ nome:'', valor:'' }); renderOutrosVariaveis(); }
+  function removerOutroVariavel(i)  { _outrosVariaveis.splice(i,1); renderOutrosVariaveis(); }
+
+  function calcularPerfHtml(v, i) {
+    const dias = 26;
+    const diasRest = parseInt(document.getElementById('diasRestantes')?.value || '0') || 0;
+    const metaDiaLiq  = parseMoney(v.metaDiaLiq)  || 0;
+    const metaMesLiq  = parseMoney(v.metaMesLiq)  || 0;
+    const vendidoBruto= parseMoney(v.vendidoBruto)|| 0;
+    const descontos   = parseMoney(v.descontos)   || 0;
+    const vendidoLiq  = Math.max(0, vendidoBruto - descontos);
+    const vendidoLiqMes = vendidoLiq * dias;
+    const metaDiaCalc = metaDiaLiq > 0 ? metaDiaLiq : (metaMesLiq > 0 ? metaMesLiq / dias : 0);
+    const metaMesCalc = metaMesLiq > 0 ? metaMesLiq : (metaDiaLiq > 0 ? metaDiaLiq * dias : 0);
+
+    // acumulado
+    const acumBruto     = parseMoney(v.acumBruto)     || 0;
+    const acumDescontos = parseMoney(v.acumDescontos) || 0;
+    const acumLiq       = Math.max(0, acumBruto - acumDescontos);
+
+    let metaResHtml = '';
+    if (metaDiaCalc > 0 || metaMesCalc > 0) {
+      metaResHtml = `<div id="vendMeta_${i}" style="background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.2);border-radius:8px;padding:6px 10px;margin-bottom:10px;display:flex;gap:14px;flex-wrap:wrap;">
+        ${metaDiaCalc > 0 ? `<span style="font-size:0.68rem;color:var(--muted);">📅 Diária: <span style="color:var(--roxo);font-family:var(--font-mono);font-weight:600;">${fmt(metaDiaCalc)}</span></span>` : ''}
+        ${metaMesCalc > 0 ? `<span style="font-size:0.68rem;color:var(--muted);">📆 Mensal: <span style="color:var(--roxo);font-family:var(--font-mono);font-weight:600;">${fmt(metaMesCalc)}</span></span>` : ''}
+      </div>`;
+    } else {
+      metaResHtml = `<div id="vendMeta_${i}" style="display:none;"></div>`;
+    }
+
+    let perfHtml = '';
+    if (vendidoLiq > 0 && metaDiaCalc > 0) {
+      const pct = (vendidoLiq / metaDiaCalc * 100);
+      const cor = pct >= 100 ? 'var(--verde)' : pct >= 75 ? 'var(--amarelo)' : 'var(--vermelho)';
+      const emoji = pct >= 100 ? '🚀' : pct >= 75 ? '✅' : '⚠️';
+      perfHtml = `<div style="margin-top:8px;background:rgba(0,201,123,0.07);border:1px solid rgba(0,201,123,0.2);border-radius:10px;padding:8px 10px;">
+        <div style="font-size:0.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.7px;margin-bottom:4px;">${emoji} Resultado de hoje (líquido)</div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;">
+          <div>
+            <div style="font-size:0.6rem;color:var(--muted);">Bruto · Descontos · Líquido</div>
+            <div style="font-family:var(--font-mono);font-size:0.82rem;color:var(--text);">${fmt(vendidoBruto)} <span style="color:var(--vermelho);">− ${fmt(descontos)}</span> = <span style="color:${cor};font-weight:700;">${fmt(vendidoLiq)}</span></div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:0.6rem;color:var(--muted);">Projeção de atingimento · Projeção mensal líquida.</div>
+            <div style="font-family:var(--font-mono);font-size:0.82rem;color:${cor};font-weight:700;">${pct.toFixed(0)}% · ${fmt(vendidoLiqMes)}</div>
+          </div>
+        </div>
+      </div>`;
+    }
+
+    // acumulado + ritmo necessário
+    let acumHtml = '';
+    if (acumBruto > 0) {
+      let barraAcumHtml = '';
+      let ritmoHtml = '';
+
+      if (metaMesCalc > 0 && acumLiq > 0) {
+        const pctAcum = Math.min((acumLiq / metaMesCalc) * 100, 100);
+        const faltaAcum = Math.max(metaMesCalc - acumLiq, 0);
+        const corAcum = pctAcum >= 100 ? 'var(--verde)' : pctAcum >= 60 ? 'var(--amarelo)' : 'var(--vermelho)';
+
+        barraAcumHtml = `<div style="margin-top:8px;">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px;">
+            <span style="font-size:0.62rem;color:var(--muted);">% da meta mensal atingida</span>
+            <span style="font-family:var(--font-mono);font-size:0.82rem;color:${corAcum};font-weight:700;">${pctAcum.toFixed(1)}%</span>
+          </div>
+          <div style="height:7px;background:var(--surface2);border-radius:4px;overflow:hidden;margin-bottom:4px;">
+            <div style="height:100%;width:${pctAcum}%;border-radius:4px;background:${corAcum};transition:width 0.6s cubic-bezier(0.34,1.56,0.64,1);"></div>
+          </div>
+          ${faltaAcum > 0 ? `<div style="font-size:0.65rem;color:var(--muted);text-align:right;">Falta <span style="color:${corAcum};font-weight:600;">${fmt(faltaAcum)}</span> p/ bater meta</div>` : `<div style="font-size:0.65rem;color:var(--verde);font-weight:700;text-align:right;">🏆 Meta batida!</div>`}
+        </div>`;
+
+        // ritmo necessário
+        if (faltaAcum > 0 && diasRest > 0) {
+          const precisaPorDia = faltaAcum / diasRest;
+          const ritmoOk = metaDiaCalc > 0 && precisaPorDia <= metaDiaCalc;
+          const corRitmo = ritmoOk ? 'var(--verde)' : precisaPorDia > metaDiaCalc * 1.3 ? 'var(--vermelho)' : 'var(--amarelo)';
+          const emojiRitmo = ritmoOk ? '✅' : precisaPorDia > metaDiaCalc * 1.3 ? '🔥' : '⚡';
+          const comparativo = metaDiaCalc > 0
+            ? `<span style="font-size:0.62rem;color:var(--muted);display:block;margin-top:2px;">${emojiRitmo} ${precisaPorDia > metaDiaCalc ? `${((precisaPorDia/metaDiaCalc-1)*100).toFixed(0)}% acima da meta diária` : `dentro da meta diária`}</span>`
+            : '';
+          ritmoHtml = `<div style="margin-top:8px;background:rgba(255,210,63,0.06);border:1px solid rgba(255,210,63,0.2);border-radius:8px;padding:8px 10px;">
+            <div style="font-size:0.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:4px;">⚡ Ritmo necessário para bater a meta</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap;">
+              <div>
+                <div style="font-size:0.6rem;color:var(--muted);">Precisa vender por dia (líq.)</div>
+                <div style="font-family:var(--font-mono);font-size:1rem;color:${corRitmo};font-weight:700;">${fmt(precisaPorDia)}</div>
+                ${comparativo}
+              </div>
+              <div style="text-align:right;">
+                <div style="font-size:0.6rem;color:var(--muted);">Dias úteis restantes</div>
+                <div style="font-family:var(--font-mono);font-size:1rem;color:var(--muted);font-weight:600;">${diasRest} dias</div>
+              </div>
+            </div>
+          </div>`;
+        } else if (faltaAcum > 0 && diasRest === 0) {
+          ritmoHtml = `<div style="margin-top:6px;font-size:0.68rem;color:var(--amarelo);text-align:center;">💡 Informe os dias úteis restantes para calcular o ritmo necessário</div>`;
+        }
+      }
+
+      acumHtml = `<div style="margin-top:8px;background:rgba(0,201,123,0.05);border:1px solid rgba(0,201,123,0.15);border-radius:10px;padding:8px 10px;">
+        <div style="font-size:0.6rem;color:var(--verde);text-transform:uppercase;letter-spacing:0.7px;font-weight:700;margin-bottom:6px;">📊 Acumulado até hoje</div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;">
+          <div><div style="font-size:0.6rem;color:var(--muted);margin-bottom:1px;">Bruto acumulado</div><span style="font-family:var(--font-mono);font-size:0.88rem;color:var(--text);">${fmt(acumBruto)}</span>${acumDescontos > 0 ? `<span style="font-size:0.65rem;color:var(--vermelho);margin-left:4px;">− ${fmt(acumDescontos)}</span>` : ''}</div>
+          ${acumLiq > 0 ? `<div style="text-align:right;"><div style="font-size:0.6rem;color:var(--muted);margin-bottom:1px;">Líquido acumulado</div><span style="font-family:var(--font-mono);font-size:0.88rem;color:var(--verde);font-weight:600;">${fmt(acumLiq)}</span></div>` : ''}
+        </div>
+        ${barraAcumHtml}
+        ${ritmoHtml}
+      </div>`;
+    }
+
+    return { metaResHtml, perfHtml, acumHtml };
+  }
+
+  function atualizarVendedorPerf(i) {
+    if (!_vendedores[i]) return;
+    const v = _vendedores[i];
+    const { metaResHtml, perfHtml, acumHtml } = calcularPerfHtml(v, i);
+    const tmp = document.createElement("div");
+    tmp.innerHTML = metaResHtml;
+    const metaEl = document.getElementById("vendMeta_" + i);
+    const perfEl = document.getElementById("vendPerf_" + i);
+    const acumEl = document.getElementById("vendAcum_" + i);
+    if (metaEl && tmp.firstElementChild) metaEl.replaceWith(tmp.firstElementChild);
+    if (perfEl) perfEl.innerHTML = perfHtml;
+    if (acumEl) acumEl.innerHTML = acumHtml;
+  }
+
+  function renderVendedores() {
+    const lista     = document.getElementById('vendedoresLista');
+    const html = _vendedores.length === 0 ? '' : _vendedores.map((v, i) => {
+      const { metaResHtml, perfHtml, acumHtml } = calcularPerfHtml(v, i);
+      return `
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:10px 12px;margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <input type="text" placeholder="Nome do vendedor" value="${v.nome}"
+            oninput="_vendedores[${i}].nome=this.value"
+            style="margin-bottom:0;background:transparent;border:none;border-bottom:1px solid var(--border);border-radius:0;padding:4px 0;font-size:0.88rem;font-family:var(--font-body);color:var(--text);width:calc(100% - 36px);">
+          <button type="button" onclick="removerVendedor(${i})" style="background:rgba(255,75,75,0.1);border:1px solid rgba(255,75,75,0.25);border-radius:8px;color:var(--vermelho);font-size:0.8rem;padding:6px 8px;cursor:pointer;line-height:1;flex-shrink:0;">✕</button>
+        </div>
+
+        <div style="font-size:0.6rem;color:var(--roxo);text-transform:uppercase;letter-spacing:0.8px;font-weight:700;margin-bottom:5px;">🎯 Metas</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;">
+          <div>
+            <label style="font-size:0.63rem;color:var(--muted);margin-bottom:3px;">Meta diária líquida (R$)</label>
+            <input type="text" inputmode="decimal" placeholder="Ex: 3000" value="${v.metaDiaLiq||''}"
+              oninput="_vendedores[${i}].metaDiaLiq=this.value;atualizarVendedorPerf(${i})"
+              onblur="smartParseInput(this);_vendedores[${i}].metaDiaLiq=this.value;atualizarVendedorPerf(${i})"
+              style="margin-bottom:0;font-size:0.82rem;padding:8px 10px;">
+          </div>
+          <div>
+            <label style="font-size:0.63rem;color:var(--muted);margin-bottom:3px;">Meta mensal líquida (R$)</label>
+            <input type="text" inputmode="decimal" placeholder="Ex: 78000" value="${v.metaMesLiq||''}"
+              oninput="_vendedores[${i}].metaMesLiq=this.value;atualizarVendedorPerf(${i})"
+              onblur="smartParseInput(this);_vendedores[${i}].metaMesLiq=this.value;atualizarVendedorPerf(${i})"
+              style="margin-bottom:0;font-size:0.82rem;padding:8px 10px;">
+          </div>
+        </div>
+        ${metaResHtml}
+
+        <div style="font-size:0.6rem;color:var(--amarelo);text-transform:uppercase;letter-spacing:0.8px;font-weight:700;margin-bottom:5px;">💰 Vendas de hoje</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+          <div>
+            <label style="font-size:0.63rem;color:var(--muted);margin-bottom:3px;">Vendeu bruto (R$)</label>
+            <input type="text" inputmode="decimal" placeholder="Ex: 3200" value="${v.vendidoBruto||''}"
+              oninput="_vendedores[${i}].vendidoBruto=this.value;atualizarVendedorPerf(${i})"
+              onblur="smartParseInput(this);_vendedores[${i}].vendidoBruto=this.value;atualizarVendedorPerf(${i})"
+              style="margin-bottom:0;font-size:0.82rem;padding:8px 10px;">
+          </div>
+          <div>
+            <label style="font-size:0.63rem;color:var(--muted);margin-bottom:3px;">Descontos dados (R$)</label>
+            <input type="text" inputmode="decimal" placeholder="Ex: 200" value="${v.descontos||''}"
+              oninput="_vendedores[${i}].descontos=this.value;atualizarVendedorPerf(${i})"
+              onblur="smartParseInput(this);_vendedores[${i}].descontos=this.value;atualizarVendedorPerf(${i})"
+              style="margin-bottom:0;font-size:0.82rem;padding:8px 10px;">
+          </div>
+        </div>
+        <div id="vendPerf_${i}">${perfHtml}</div>
+
+        <div style="font-size:0.6rem;color:var(--verde);text-transform:uppercase;letter-spacing:0.8px;font-weight:700;margin-bottom:5px;margin-top:10px;">📊 Acumulado até hoje</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+          <div>
+            <label style="font-size:0.63rem;color:var(--muted);margin-bottom:3px;">Venda acumulada bruta (R$)</label>
+            <input type="text" inputmode="decimal" placeholder="Ex: 48000" value="${v.acumBruto||''}"
+              oninput="_vendedores[${i}].acumBruto=this.value;atualizarVendedorPerf(${i})"
+              onblur="smartParseInput(this);_vendedores[${i}].acumBruto=this.value;atualizarVendedorPerf(${i})"
+              style="margin-bottom:0;font-size:0.82rem;padding:8px 10px;">
+          </div>
+          <div>
+            <label style="font-size:0.63rem;color:var(--muted);margin-bottom:3px;">Descontos acumulados (R$)</label>
+            <input type="text" inputmode="decimal" placeholder="Ex: 1200" value="${v.acumDescontos||''}"
+              oninput="_vendedores[${i}].acumDescontos=this.value;atualizarVendedorPerf(${i})"
+              onblur="smartParseInput(this);_vendedores[${i}].acumDescontos=this.value;atualizarVendedorPerf(${i})"
+              style="margin-bottom:0;font-size:0.82rem;padding:8px 10px;">
+          </div>
+        </div>
+        <div id="vendAcum_${i}">${acumHtml}</div>
+      </div>`;
+    }).join('');
+
+    if (lista) lista.innerHTML = html;
+  }
+
+  function adicionarVendedor() { _vendedores.push({ nome:'', metaDiaLiq:'', metaMesLiq:'', vendidoBruto:'', descontos:'', acumBruto:'', acumDescontos:'' }); renderVendedores(); }
+  function removerVendedor(i)  { _vendedores.splice(i,1); renderVendedores(); }
+
+  // ── LIVE UPDATE ──
+  function atualizarTotais() {
+    const aluguel  = getMetaVal('metaAluguel')  || 0;
+    const internet = getMetaVal('metaInternet') || 0;
+    const luz      = getMetaVal('metaLuz')      || 0;
+    const sistema  = 0;
+    const contador = 0;
+    const salarios = _modoFolha
+      ? (getMetaVal('metaFolhaPagamento') || 0)
+      : _funcionarios.reduce((a,f) => a + custoLiquidoFunc(f), 0);
+    const outrosF  = _outrosFixos.reduce((a,o)  => a + (parseMoney(o.valor)  ||0), 0);
+    const totalFixos = aluguel + internet + luz + sistema + contador + salarios + outrosF;
+
+    const el = document.getElementById('metaTotalFixosDisplay');
+    if (el) el.textContent = fmt(totalFixos);
+
+    const subFunc = document.getElementById('metaSubTotalFuncDisplay');
+    if (subFunc) subFunc.textContent = fmt(salarios);
+
+    const subFixos = document.getElementById('metaSubTotalFixosDisplay');
+    if (subFixos) subFixos.textContent = fmt(aluguel + internet + luz + outrosF);
+
+    // variáveis → calcula %
+    const fatRef   = getMetaVal('metaFatRef') || 0;
+    const cmvR     = getMetaVal('metaCMVReais')      || 0;
+    const cartaoR  = getMetaVal('metaCartaoReais')   || 0;
+    const comissR  = getMetaVal('metaComissoesReais')|| 0;
+    const outrosVarR = _outrosVariaveis.reduce((a,o) => a + (parseMoney(o.valor)||0), 0);
+    const totalVarR = cmvR + cartaoR + comissR + outrosVarR;
+
+    const calcPct = (v) => fatRef > 0 ? ((v/fatRef)*100).toFixed(1)+'%' : '—';
+    const setEl = (id, txt) => { const e = document.getElementById(id); if (e) e.textContent = txt; };
+    setEl('metaCMVPctDisplay',      calcPct(cmvR));
+    setEl('metaCartaoPctDisplay',   calcPct(cartaoR));
+    setEl('metaComissoesPctDisplay',calcPct(comissR));
+    setEl('metaTotalVarReaisDisplay',fmt(totalVarR));
+    const totalVarPct = fatRef > 0 ? (totalVarR / fatRef) * 100 : 0;
+    setEl('metaTotalVarPctDisplay', fatRef > 0 ? totalVarPct.toFixed(1).replace('.',',')+'%' : '—');
+
+    // margem sugerida — baseada só nos custos, independente do que o usuário digita
+    const margemContr = 100 - totalVarPct;
+    const margemSug = fatRef > 0 ? Math.max(3, parseFloat((margemContr * 0.6).toFixed(1))) : null;
+    setEl('metaMargemSugeridaDisplay', margemSug !== null ? margemSug + '%' : '—');
+
+    // alerta de % máxima de lucro
+    const alertaEl = document.getElementById('metaLucroMaxAlerta');
+    if (alertaEl) {
+      if (fatRef > 0 && totalVarPct > 0) {
+        const maxLucro = Math.max(0, parseFloat((margemContr - 0.1).toFixed(1)));
+        // Usa o lucro real calculado pela meta digitada (via metaLucro oculto atualizado por calcularMetaInvertida)
+        const lucroAtual = parseFloat(document.getElementById('metaLucro')?.value?.replace(',','.')) || 0;
+        const metaDigitadaVal = getMetaVal('metaDesejada') || 0;
+        // Só mostra alerta de "perto do limite" se há meta digitada e lucro real calculado
+        if (metaDigitadaVal > 0 && lucroAtual > 0) {
+          const excedeu       = lucroAtual > maxLucro;
+          const quaseExcedeu  = !excedeu && lucroAtual > maxLucro * 0.85;
+          if (excedeu) {
+            alertaEl.style.display = '';
+            alertaEl.innerHTML = `<div style="background:rgba(255,75,75,0.1);border:1px solid rgba(255,75,75,0.35);border-radius:10px;padding:10px 14px;">
+              <div style="font-size:0.72rem;font-weight:700;color:#FF4B4B;margin-bottom:3px;">🚫 Atenção — lucro acima do possível</div>
+              <div style="font-size:0.7rem;color:var(--muted);line-height:1.5;">Com custos variáveis de <strong style="color:var(--amarelo);">${totalVarPct.toFixed(1)}%</strong>, o máximo de lucro possível é <strong style="color:#FF4B4B;font-family:var(--font-mono);">${maxLucro.toFixed(1)}%</strong>. Verifique se todos os custos estão cadastrados.</div>
+            </div>`;
+          } else if (quaseExcedeu) {
+            alertaEl.style.display = '';
+            alertaEl.innerHTML = `<div style="background:rgba(255,210,63,0.08);border:1px solid rgba(255,210,63,0.35);border-radius:10px;padding:10px 14px;">
+              <div style="font-size:0.72rem;font-weight:700;color:#FFD23F;margin-bottom:3px;">⚠️ Atenção — perto do limite teórico</div>
+              <div style="font-size:0.7rem;color:var(--muted);line-height:1.5;">Com custos variáveis de <strong style="color:var(--amarelo);">${totalVarPct.toFixed(1)}%</strong>, o máximo de lucro possível é <strong style="color:#FFD23F;font-family:var(--font-mono);">${maxLucro.toFixed(1)}%</strong>. Confira se todos os custos fixos estão lançados.</div>
+            </div>`;
+          } else {
+            alertaEl.style.display = 'none';
+            alertaEl.innerHTML = '';
+          }
+        } else {
+          alertaEl.style.display = 'none';
+          alertaEl.innerHTML = '';
+        }
+      } else {
+        alertaEl.style.display = 'none';
+        alertaEl.innerHTML = '';
+      }
+    }
+
+    atualizarProjecao();
+    atualizarViabilidade();
+  }
+
+  function atualizarProjecao() {
+    const dBruto  = getMetaVal('metaVendaDiariaMin') || 0;
+    const dLiq    = getMetaVal('metaVendaDiariaMax') || 0;
+    const dReal   = getMetaVal('metaVendaReal')      || 0;
+    const dRealLiq= getMetaVal('metaVendaRealLiq')   || 0;
+    const acumBruto = getMetaVal('metaAcumBruto')    || 0;
+    const acumLiq   = getMetaVal('metaAcumLiq')      || 0;
+    const metaMensal = getMetaVal('metaDesejada')    || 0;
+    const el      = document.getElementById('metaProjecaoDisplay');
+    const elAcum  = document.getElementById('metaAcumDisplay');
+    if (!el) return;
+    if (dBruto <= 0 && dLiq <= 0 && dReal <= 0 && dRealLiq <= 0) { el.innerHTML = ''; }
+    const dias = 26;
+
+    let html = '<div style="display:flex;flex-direction:column;gap:8px;margin-top:8px;">';
+
+    // Projeção mensal da venda diária esperada
+    if (dBruto > 0 || dLiq > 0) {
+      html += `<div style="background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.2);border-radius:10px;padding:10px 14px;">
+        <div style="font-size:0.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;">📆 Projeção mensal esperada (${dias} dias úteis)</div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;">
+          ${dBruto > 0 ? `<div><div style="font-size:0.6rem;color:var(--muted);margin-bottom:2px;">Bruto</div><span style="font-family:var(--font-mono);font-size:1rem;color:var(--roxo);font-weight:600;">${fmt(dBruto * dias)}</span></div>` : ''}
+          ${dLiq > 0 ? `<div style="text-align:right;"><div style="font-size:0.6rem;color:var(--muted);margin-bottom:2px;">Líquido</div><span style="font-family:var(--font-mono);font-size:1rem;color:var(--verde);font-weight:600;">${fmt(dLiq * dias)}</span></div>` : ''}
+        </div>
+      </div>`;
+    }
+
+    // Venda real de hoje
+    if (dReal > 0 || dRealLiq > 0) {
+      const vsBruto = dBruto > 0 && dReal > 0 ? ((dReal - dBruto) / dBruto * 100) : null;
+      const cor = vsBruto !== null ? (vsBruto >= 0 ? 'var(--verde)' : 'var(--vermelho)') : 'var(--verde)';
+      const emoji = vsBruto !== null ? (vsBruto >= 0 ? '🚀' : '⚠️') : '✅';
+      const diffTxt = vsBruto !== null
+        ? (vsBruto >= 0 ? `+${vsBruto.toFixed(0)}% vs meta bruta` : `${vsBruto.toFixed(0)}% vs meta bruta`)
+        : '';
+      html += `<div style="background:rgba(0,201,123,0.06);border:1px solid rgba(0,201,123,0.2);border-radius:10px;padding:10px 14px;">
+        <div style="font-size:0.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;">${emoji} Venda real de hoje · projeção mensal</div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;">
+          ${dReal > 0 ? `<div><div style="font-size:0.6rem;color:var(--muted);margin-bottom:2px;">Bruto hoje</div><span style="font-family:var(--font-mono);font-size:1rem;color:${cor};font-weight:600;">${fmt(dReal)}</span><div style="font-size:0.68rem;color:var(--muted);margin-top:1px;">→ ${fmt(dReal*dias)}/mês</div></div>` : ''}
+          ${dRealLiq > 0 ? `<div style="text-align:right;"><div style="font-size:0.6rem;color:var(--muted);margin-bottom:2px;">Líquido hoje</div><span style="font-family:var(--font-mono);font-size:1rem;color:var(--verde);font-weight:600;">${fmt(dRealLiq)}</span><div style="font-size:0.68rem;color:var(--muted);margin-top:1px;">→ ${fmt(dRealLiq*dias)}/mês</div></div>` : ''}
+        </div>
+        ${diffTxt ? `<div style="font-size:0.68rem;color:${cor};margin-top:6px;font-weight:600;">${diffTxt}</div>` : ''}
+      </div>`;
+    }
+
+    html += '</div>';
+    el.innerHTML = (dBruto > 0 || dLiq > 0 || dReal > 0 || dRealLiq > 0) ? html : '';
+
+    // — Acumulado da loja —
+    if (elAcum) {
+      if (acumBruto > 0 || acumLiq > 0) {
+        let barraHtml = '';
+        if (metaMensal > 0 && acumLiq > 0) {
+          const pct = Math.min((acumLiq / metaMensal) * 100, 100);
+          const falta = Math.max(metaMensal - acumLiq, 0);
+          const cor = pct >= 100 ? 'var(--verde)' : pct >= 60 ? 'var(--amarelo)' : 'var(--vermelho)';
+          barraHtml = `<div style="margin-top:10px;">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;">
+              <span style="font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.7px;">% da meta mensal atingida</span>
+              <span style="font-family:var(--font-mono);font-size:0.88rem;color:${cor};font-weight:700;">${pct.toFixed(1)}%</span>
+            </div>
+            <div style="height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;margin-bottom:5px;">
+              <div style="height:100%;width:${pct}%;border-radius:4px;background:${cor};transition:width 0.6s cubic-bezier(0.34,1.56,0.64,1);"></div>
+            </div>
+            ${falta > 0 ? `<div style="font-size:0.68rem;color:var(--muted);text-align:right;">Falta <span style="color:${cor};font-weight:600;">${fmt(falta)}</span> para bater a meta</div>` : `<div style="font-size:0.68rem;color:var(--verde);font-weight:700;text-align:right;">🏆 Meta batida!</div>`}
+          </div>`;
+        }
+        elAcum.innerHTML = `<div style="background:rgba(0,201,123,0.06);border:1px solid rgba(0,201,123,0.2);border-radius:10px;padding:10px 14px;margin-top:4px;">
+          <div style="font-size:0.6rem;color:var(--verde);text-transform:uppercase;letter-spacing:0.8px;font-weight:700;margin-bottom:8px;">📊 Acumulado até hoje</div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;">
+            ${acumBruto > 0 ? `<div><div style="font-size:0.6rem;color:var(--muted);margin-bottom:2px;">Bruto</div><span style="font-family:var(--font-mono);font-size:1rem;color:var(--text);font-weight:600;">${fmt(acumBruto)}</span></div>` : ''}
+            ${acumLiq > 0 ? `<div style="text-align:right;"><div style="font-size:0.6rem;color:var(--muted);margin-bottom:2px;">Líquido</div><span style="font-family:var(--font-mono);font-size:1rem;color:var(--verde);font-weight:600;">${fmt(acumLiq)}</span></div>` : ''}
+          </div>
+          ${barraHtml}
+        </div>`;
+      } else {
+        elAcum.innerHTML = '';
+      }
+    }
+
+    atualizarViabilidade();
+  }
+
+  // Sincroniza o campo fatRef duplicado na aba Meta com o original
+  function sincFatRefMeta(val) {
+    const orig = document.getElementById('metaFatRef');
+    if (orig && val) orig.value = val;
+    atualizarTotais();
+  }
+
+  // ── NOVA LÓGICA INVERTIDA: usuário digita meta total → sistema calcula lucro ──
+  function calcularMetaInvertida() {
+    const meta   = getMetaVal('metaDesejada') || 0;
+    const custo  = _getCustoFixoAtual();
+
+    // Lê custos variáveis para calcular margem de contribuição
+    const fatRef    = getMetaVal('metaFatRef') || getMetaVal('metaFatRefMeta') || 0;
+    const cmvR      = getMetaVal('metaCMVReais')      || 0;
+    const cartaoR   = getMetaVal('metaCartaoReais')   || 0;
+    const comissR   = getMetaVal('metaComissoesReais')|| 0;
+    const outrosVarR = _outrosVariaveis.reduce((a,o) => a + (parseMoney(o.valor)||0), 0);
+    const totalVarR  = cmvR + cartaoR + comissR + outrosVarR;
+    const totalVarPct = fatRef > 0 ? (totalVarR / fatRef) * 100 : 0;
+    const margemContr = 100 - totalVarPct;
+
+    const blocoLucro   = document.getElementById('metaResultadoLucro');
+    const elPct        = document.getElementById('metaLucroResultPct');
+    const elReais      = document.getElementById('metaLucroResultReais');
+    const elStatus     = document.getElementById('metaStatusBloco');
+
+    // Sincroniza campo oculto metaLucro para compatibilidade com o restante do sistema
+    const lucroEl = document.getElementById('metaLucro');
+    const pctEl   = document.getElementById('metaDesejadaPct');
+
+    if (!meta || meta <= 0) {
+      if (blocoLucro) blocoLucro.style.display = 'none';
+      if (lucroEl) lucroEl.value = '10';
+      if (pctEl) pctEl.value = '';
+      _renderFaixaSaudavel(custo, totalVarPct, margemContr, 0, fatRef);
+      return;
+    }
+
+    // Calcula lucro efetivo
+    let lucroPct, lucroReais;
+    if (totalVarPct > 0) {
+      // Com variáveis: lucro = margemContr - (custoFixo / meta * 100)
+      lucroPct  = margemContr - (custo / meta * 100);
+      lucroReais = meta * (lucroPct / 100);
+    } else {
+      // Sem variáveis: lucro = meta - custoFixo
+      lucroReais = meta - custo;
+      lucroPct   = custo > 0 ? (lucroReais / meta * 100) : ((meta - 0) / meta * 100);
+    }
+
+    // Atualiza campos ocultos para compatibilidade
+    if (lucroEl) lucroEl.value = lucroPct > 0 ? lucroPct.toFixed(1) : '0';
+    if (pctEl)   pctEl.value   = lucroPct > 0 ? lucroPct.toFixed(1) : '0';
+
+    // Mostra bloco de resultado
+    if (blocoLucro) blocoLucro.style.display = '';
+
+    // Cor dinâmica do lucro
+    const corLucro = lucroPct >= 15 ? 'var(--verde)' : lucroPct >= 10 ? 'var(--amarelo)' : 'var(--vermelho)';
+    if (elPct) {
+      elPct.textContent = lucroPct.toFixed(1) + '%';
+      elPct.style.color = corLucro;
+      elPct.closest('div').style.borderColor = lucroPct >= 15 ? 'rgba(0,201,123,0.3)' : lucroPct >= 10 ? 'rgba(255,210,63,0.3)' : 'rgba(255,75,75,0.3)';
+      elPct.closest('div').style.background  = lucroPct >= 15 ? 'rgba(0,201,123,0.07)' : lucroPct >= 10 ? 'rgba(255,210,63,0.07)' : 'rgba(255,75,75,0.07)';
+    }
+    if (elReais) {
+      elReais.textContent = lucroReais >= 0 ? fmt(lucroReais) : '— prejuízo';
+      elReais.style.color = corLucro;
+    }
+
+    // Status
+    if (elStatus) {
+      let status, cor, bg, border, detalhe;
+      if (custo <= 0) {
+        elStatus.innerHTML = '';
+      } else if (lucroPct <= 0) {
+        status='❌ INVIÁVEL'; cor='#FF4B4B'; bg='rgba(255,75,75,0.08)'; border='rgba(255,75,75,0.3)';
+        detalhe = 'Com essa meta, os custos não são cobertos. Há prejuízo operacional.';
+      } else if (lucroPct < 10) {
+        status='⚠️ ZONA DE RISCO'; cor='#FFD23F'; bg='rgba(255,210,63,0.08)'; border='rgba(255,210,63,0.3)';
+        detalhe = `Lucro de apenas ${lucroPct.toFixed(1)}% — muito próximo do prejuízo. Qualquer imprevisto compromete a operação.`;
+      } else if (lucroPct < 15) {
+        status='🟡 ATENÇÃO'; cor='#FFD23F'; bg='rgba(255,210,63,0.08)'; border='rgba(255,210,63,0.3)';
+        detalhe = `Lucro de ${lucroPct.toFixed(1)}% — operação no limite. O ideal é trabalhar acima de 15%.`;
+      } else if (lucroPct <= 25) {
+        status='✅ VIÁVEL'; cor='#00C97B'; bg='rgba(0,201,123,0.08)'; border='rgba(0,201,123,0.3)';
+        detalhe = `Lucro de ${lucroPct.toFixed(1)}% — operação saudável. Custo bem coberto com folga.`;
+      } else if (lucroPct <= 40) {
+        status='🚀 EXCELENTE'; cor='#A78BFA'; bg='rgba(167,139,250,0.08)'; border='rgba(167,139,250,0.3)';
+        detalhe = `Lucro de ${lucroPct.toFixed(1)}% — meta muito confortável. Ótima folga operacional.`;
+      } else {
+        status='🤔 REVISAR'; cor='#A78BFA'; bg='rgba(167,139,250,0.06)'; border='rgba(167,139,250,0.25)';
+        detalhe = `Lucro de ${lucroPct.toFixed(1)}% é acima do comum em negócios saudáveis (até ~35%). Verifique se todos os custos fixos e variáveis estão cadastrados — pode estar faltando algum.`;
+      }
+      if (custo > 0) {
+        elStatus.innerHTML = `<div style="background:${bg};border:1px solid ${border};border-radius:12px;padding:12px 14px;">
+          <div style="font-family:var(--font-display);font-weight:800;font-size:0.9rem;color:${cor};margin-bottom:5px;">${status}</div>
+          <div style="font-size:0.75rem;color:var(--muted);">${detalhe}</div>
+        </div>`;
+      }
+    }
+
+    _renderFaixaSaudavel(custo, totalVarPct, margemContr, meta, fatRef);
+    atualizarTotais();
+  }
+
+  // Renderiza a faixa saudável e meta sugerida separadas do status da meta digitada
+  function _renderFaixaSaudavel(custo, totalVarPct, margemContr, metaDigitada, fatRef) {
+    const el    = document.getElementById('metaViabilidadeDisplay');
+    const elSug = document.getElementById('metaSugeridaBloco');
+    if (!el) return;
+
+    const faixa = _sugerirFaixaMeta(custo);
+
+    // Meta sugerida pelo sistema
+    if (elSug) {
+      if (faixa && faixa.confortavel) {
+        const baseLabel = 'Faturamento necessário para cobrir todos os custos com 15% de lucro líquido';
+        elSug.innerHTML = `
+          <div style="background:rgba(26,115,232,0.08);border:1px solid rgba(26,115,232,0.25);border-radius:10px;padding:10px 14px;margin-bottom:10px;">
+            <div style="font-size:0.65rem;color:#7eb3f5;text-transform:uppercase;letter-spacing:0.8px;font-weight:600;margin-bottom:6px;">💡 Meta sugerida (zona confortável — 15% de lucro)</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-size:0.72rem;color:var(--muted);">${baseLabel}</span>
+              <span style="font-family:var(--font-mono);font-size:1.05rem;color:#7eb3f5;font-weight:700;">${fmt(faixa.confortavel)}</span>
+            </div>
+          </div>`;
+      } else {
+        elSug.innerHTML = '';
+      }
+    }
+
+    if (!faixa) { el.innerHTML = ''; return; }
+
+    const fmtFaixa = (val, label, emoji, cor, lucroR) => {
+      if (val === null) return `<div style="display:flex;align-items:center;gap:6px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+        <span style="font-size:0.85rem;">${emoji}</span>
+        <span style="font-size:0.8rem;color:var(--muted);">${label} <span style="font-size:0.68rem;">(impossível com esses custos)</span></span>
+      </div>`;
+      const isSelected = metaDigitada > 0 && Math.abs(metaDigitada - val) / val < 0.05;
+      const highlight  = isSelected ? `border-left:3px solid ${cor};padding-left:9px;` : '';
+      return `<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.05);${highlight}">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span style="font-size:0.85rem;">${emoji}</span>
+          <div>
+            <div style="font-size:0.8rem;color:var(--text);font-weight:500;">${label}</div>
+            <div style="font-size:0.68rem;color:var(--muted);">Lucro: ${fmt(lucroR)}</div>
+          </div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-family:var(--font-mono);font-size:0.92rem;color:${cor};font-weight:700;">${fmt(val)}</div>
+          <div style="font-size:0.62rem;color:var(--muted);">meta total/mês</div>
+        </div>
+      </div>`;
+    };
+
+    const lucroMin  = faixa.minimo      ? faixa.minimo      * 0.20 : null;
+    const lucroConf = faixa.confortavel ? faixa.confortavel * 0.15 : null;
+    const lucroAgr  = faixa.agressivo   ? faixa.agressivo   * 0.10 : null;
+
+    const subtitulo = faixa.temVariaveis
+      ? `<div style="font-size:0.65rem;color:var(--muted);margin-bottom:8px;opacity:0.85;">Meta total de faturamento (cobre custos variáveis + fixos + lucro desejado)</div>`
+      : `<div style="font-size:0.65rem;color:var(--muted);margin-bottom:8px;opacity:0.85;">Meta de faturamento para cobrir custos fixos com a margem de lucro indicada</div>`;
+
+    el.innerHTML = `
+      <div style="background:rgba(0,201,123,0.04);border:1px solid rgba(0,201,123,0.18);border-radius:12px;padding:14px;">
+        <div style="font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;font-weight:700;margin-bottom:4px;">📊 Faixa saudável para esta filial</div>
+        ${subtitulo}
+        ${fmtFaixa(faixa.minimo,      '🔹 Mínimo viável (20% de lucro)',      '🔹', 'var(--text)',    lucroMin)}
+        ${fmtFaixa(faixa.confortavel, '🔸 Zona confortável (15% de lucro)',   '🔸', 'var(--verde)',   lucroConf)}
+        ${fmtFaixa(faixa.agressivo,   '🔻 Agressivo (10% de lucro)',          '🔻', 'var(--amarelo)', lucroAgr)}
+      </div>`;
+  }
+
+  function atualizarViabilidade() {
+    const meta    = getMetaVal('metaDesejada')       || 0;
+    const fatRef  = getMetaVal('metaFatRef')         || 0;
+    const dMin    = getMetaVal('metaVendaDiariaMin') || 0;
+    const dMax    = getMetaVal('metaVendaDiariaMax') || 0;
+    const el      = document.getElementById('metaViabilidadeDisplay');
+    const elSug   = document.getElementById('metaSugeridaDisplay');
+    if (!el) return;
+
+    // Toda a lógica agora está em calcularMetaInvertida()
+    calcularMetaInvertida();
+  }
+
+  // Sincronização R$ ↔ % da meta desejada ↔ Margem de Lucro %
+  let _syncingMeta = false;
+
+  // ── HELPER: custo fixo total atual ──
+  function _getCustoFixoAtual() {
+    const aluguel  = getMetaVal('metaAluguel')  || 0;
+    const internet = getMetaVal('metaInternet') || 0;
+    const luz      = getMetaVal('metaLuz')      || 0;
+    const salarios = _modoFolha
+      ? (getMetaVal('metaFolhaPagamento') || 0)
+      : _funcionarios.reduce((a, f) => a + custoLiquidoFunc(f), 0);
+    const outrosF  = _outrosFixos.reduce((a, o) => a + (parseMoney(o.valor) || 0), 0);
+    return aluguel + internet + luz + salarios + outrosF;
+  }
+
+  // ── HELPERS faixa e análise ──
+  function _sugerirFaixaMeta(custo) {
+    if (!custo || custo <= 0) return null;
+
+    const fatRef    = getMetaVal('metaFatRef') || getMetaVal('metaFatRefMeta') || 0;
+    const cmvR      = getMetaVal('metaCMVReais')      || 0;
+    const cartaoR   = getMetaVal('metaCartaoReais')   || 0;
+    const comissR   = getMetaVal('metaComissoesReais')|| 0;
+    const outrosVarR = _outrosVariaveis.reduce((a,o) => a + (parseMoney(o.valor)||0), 0);
+    const totalVarR  = cmvR + cartaoR + comissR + outrosVarR;
+    const totalVarPct = fatRef > 0 ? (totalVarR / fatRef) * 100 : 0;
+    const margemContr = 100 - totalVarPct;
+
+    if (fatRef <= 0 || totalVarPct <= 0) {
+      const metaCalc20 = custo / 0.20;
+      const metaCalc15 = custo / 0.15;
+      const metaCalc10 = custo / 0.10;
+      return { minimo: metaCalc20, confortavel: metaCalc15, agressivo: metaCalc10, temVariaveis: false };
+    }
+
+    const calcMeta = (lucro) => {
+      const livre = margemContr - lucro;
+      if (livre <= 0) return null;
+      return custo / (livre / 100);
+    };
+
+    const metaCalc20 = calcMeta(20);
+    const metaCalc15 = calcMeta(15);
+    const metaCalc10 = calcMeta(10);
+
+    return {
+      minimo:      metaCalc20,
+      confortavel: metaCalc15,
+      agressivo:   metaCalc10,
+      temVariaveis: true,
+      margemContr: margemContr,
+      totalVarPct: totalVarPct,
+      fatRef: fatRef
+    };
+  }
+
+  function _analisarMetaVsHistorico(meta, faturamentoBase) {
+    if (!meta || !faturamentoBase || faturamentoBase <= 0) return null;
+    if (meta > faturamentoBase * 1.5)  return { status: 'irreal',    mensagem: '❌ Meta MUITO acima do histórico desta filial' };
+    if (meta > faturamentoBase * 1.2)  return { status: 'agressiva', mensagem: '⚠️ Meta agressiva — exige ganho real de performance' };
+    if (meta < faturamentoBase * 0.8)  return { status: 'baixa',     mensagem: '🟡 Meta abaixo do potencial da filial' };
+    return { status: 'saudavel', mensagem: '✅ Meta coerente com a realidade da operação' };
+  }
+
+  // Meta R$ digitada → calcula Margem % = Custo ÷ Meta
+  function syncMetaFromReais() {
+    if (_syncingMeta) return;
+    _syncingMeta = true;
+    const custo = _getCustoFixoAtual();
+    const reais = getMetaVal('metaDesejada') || 0;
+    const pctEl   = document.getElementById('metaDesejadaPct');
+    const lucroEl = document.getElementById('metaLucro');
+    if (reais > 0 && custo > 0) {
+      const margemPct = (custo / reais * 100).toFixed(1);
+      if (pctEl)   pctEl.value   = margemPct;
+      if (lucroEl) lucroEl.value = margemPct;
+    } else {
+      if (pctEl)   pctEl.value   = '';
+      if (lucroEl) lucroEl.value = '';
+    }
+    atualizarTotais();
+    _syncingMeta = false;
+  }
+
+  // % do faturamento digitado → atualiza Meta R$
+  function syncMetaFromPct() {
+    if (_syncingMeta) return;
+    _syncingMeta = true;
+    const fatRef = getMetaVal('metaFatRef') || 0;
+    const pctEl = document.getElementById('metaDesejadaPct');
+    const reaisEl = document.getElementById('metaDesejada');
+    const lucroEl = document.getElementById('metaLucro');
+    const pct = parseFloat(pctEl?.value?.replace(',','.')) || 0;
+    if (reaisEl) {
+      if (pct > 0 && fatRef > 0) {
+        const val = (pct / 100) * fatRef;
+        reaisEl.value = val % 1 === 0 ? val.toFixed(0) : val.toFixed(2);
+      } else {
+        reaisEl.value = '';
+      }
+    }
+    // Espelha no campo Margem de Lucro %
+    if (lucroEl && pct > 0) {
+      lucroEl.value = pct.toFixed(1);
+      atualizarTotais();
+    }
+    _syncingMeta = false;
+  }
+
+  // Margem % digitada → calcula Meta R$ = Custo ÷ Margem
+  function syncMargemToMeta() {
+    if (_syncingMeta) return;
+    _syncingMeta = true;
+    const custo   = _getCustoFixoAtual();
+    const lucroEl = document.getElementById('metaLucro');
+    const reaisEl = document.getElementById('metaDesejada');
+    const pctEl   = document.getElementById('metaDesejadaPct');
+    const pct = parseFloat(lucroEl?.value?.replace(',', '.')) || 0;
+    if (custo > 0 && pct > 0) {
+      const meta = custo / (pct / 100);
+      if (reaisEl) reaisEl.value = meta % 1 === 0 ? meta.toFixed(0) : meta.toFixed(2);
+      if (pctEl)   pctEl.value   = pct.toFixed(1);
+    } else {
+      if (reaisEl) reaisEl.value = '';
+      if (pctEl)   pctEl.value   = '';
+    }
+    _syncingMeta = false;
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    loadFiliais();
+    renderFuncionarios();
+    renderFilialTabs();
+    carregarFilialAtiva();
+    ['metaAluguel','metaInternet','metaLuz','metaSistema','metaContador',
+     'metaFatRef','metaCMVReais','metaCartaoReais','metaComissoesReais','metaLucro'].forEach(id => {
+      const e = document.getElementById(id);
+      if (e) e.addEventListener('input', atualizarTotais);
+    });
+    ['metaVendaDiariaMin','metaVendaDiariaMax'].forEach(id => {
+      const e = document.getElementById(id);
+      if (e) e.addEventListener('input', atualizarProjecao);
+    });
+    const md = document.getElementById('metaDesejada');
+    if (md) md.addEventListener('input', atualizarViabilidade);
+  });
+
+  function toggleAnoAnterior() {
+    const card = document.getElementById('metaAnoAnteriorCard');
+    const btn  = document.getElementById('btnAnoAnterior');
+    const hidden = card.style.display === 'none';
+    card.style.display = hidden ? 'block' : 'none';
+    btn.textContent = hidden ? '📅 − Remover comparação com ano anterior' : '📅 + Adicionar comparação com ano anterior';
+  }
+
+  // ── CALCULAR META ──
+  function calcularMeta() {
+    salvarFilialAtiva();
+    saveFiliais();
+    const filial   = document.getElementById('metaFilial').value.trim() || 'Filial';
+    const aluguel  = getMetaVal('metaAluguel')  || 0;
+    const internet = getMetaVal('metaInternet') || 0;
+    const luz      = getMetaVal('metaLuz')      || 0;
+    const sistema  = getMetaVal('metaSistema')  || 0;
+    const contador = getMetaVal('metaContador') || 0;
+    const salarios = _modoFolha ? (getMetaVal('metaFolhaPagamento')||0) : _funcionarios.reduce((a,f)=>a+custoLiquidoFunc(f),0);
+    const outrosF  = _outrosFixos.reduce((a,o)=>a+(parseMoney(o.valor)||0),0);
+    const totalFixos = aluguel+internet+luz+sistema+contador+salarios+outrosF;
+
+    const fatRef   = getMetaVal('metaFatRef')           || 0;
+    const cmvR     = getMetaVal('metaCMVReais')         || 0;
+    const cartaoR  = getMetaVal('metaCartaoReais')      || 0;
+    const comissR  = getMetaVal('metaComissoesReais')   || 0;
+    const totalVarR   = cmvR + cartaoR + comissR;
+    const totalVarPct = fatRef > 0 ? (totalVarR / fatRef) * 100 : 0;
+    const cmvPct    = fatRef > 0 ? (cmvR   /fatRef)*100 : 0;
+    const cartaoPct = fatRef > 0 ? (cartaoR/fatRef)*100 : 0;
+    const comissPct = fatRef > 0 ? (comissR/fatRef)*100 : 0;
+
+    const lucroDesejadoPct = getMetaVal('metaLucro') || 0;
+    const dMin = getMetaVal('metaVendaDiariaMin') || 0;
+    const dMax = getMetaVal('metaVendaDiariaMax') || 0;
+    const metaDesejada = getMetaVal('metaDesejada') || 0;
+    const anoAnterior  = getMetaVal('metaAnoAnterior') || 0;
+    const mesRef = document.getElementById('metaMesRef') ? document.getElementById('metaMesRef').value : '';
+
+    if (totalFixos <= 0) { alert('Informe pelo menos um custo fixo.'); return; }
+
+    const margemContr = 100 - totalVarPct;
+    const margemLivre = margemContr - lucroDesejadoPct;
+
+    const metaFaturamento  = margemLivre !== 0 ? totalFixos / (margemLivre / 100) : 0;
+    const metaMinima       = totalVarPct > 0 ? totalFixos / (margemContr / 100) : totalFixos;
+    const lucroReais       = metaFaturamento * (lucroDesejadoPct / 100);
+    const variaveisReais   = metaFaturamento * (totalVarPct / 100);
+    const margemSugerida   = Math.max(3, parseFloat((margemContr * 0.6).toFixed(1)));
+
+    // projeção mensal
+    const dias = 26;
+    const projecaoMin = dMin * dias;
+    const projecaoMax = dMax > 0 ? dMax * dias : 0;
+
+    // viabilidade da meta desejada
+    let viabilidadeHtml = '';
+    if (margemLivre <= 0) {
+      viabilidadeHtml = `
+        <div style="background:rgba(255,75,75,0.08);border:1px solid rgba(255,75,75,0.3);border-radius:16px;padding:16px;margin-bottom:10px;">
+          <div style="font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Atenção — margem negativa</div>
+          <div style="font-family:var(--font-display);font-weight:800;font-size:1.1rem;color:#FF4B4B;margin-bottom:6px;">❌ INVIÁVEL</div>
+          <div style="font-size:0.75rem;color:var(--muted);">Custos variáveis (${totalVarPct.toFixed(1)}%) + lucro desejado (${lucroDesejadoPct}%) = ${(totalVarPct + lucroDesejadoPct).toFixed(1)}% — ultrapassa 100% do faturamento. Não sobra margem para cobrir os fixos.</div>
+        </div>`;
+    } else if (metaDesejada > 0) {
+      const diff = metaDesejada - metaFaturamento;
+      const diffPct = (diff / metaFaturamento * 100);
+      let st, cor, bg, border, detal;
+      if (diffPct > 25) {
+        st='🚀 EXAGERADA'; cor='#A78BFA'; bg='rgba(167,139,250,0.08)'; border='rgba(167,139,250,0.3)';
+        detal=`Meta ${diffPct.toFixed(0)}% acima do necessário. Sobra ${fmt(Math.abs(diff))} de margem.`;
+      } else if (diffPct >= 0) {
+        st='✅ VIÁVEL'; cor='#00C97B'; bg='rgba(0,201,123,0.08)'; border='rgba(0,201,123,0.3)';
+        detal=`Cobre todos os custos + ${lucroDesejadoPct}% de lucro.`;
+      } else if (diffPct >= -15) {
+        st='⚠️ ATENÇÃO'; cor='#FFD23F'; bg='rgba(255,210,63,0.08)'; border='rgba(255,210,63,0.3)';
+        detal=`Faltam ${fmt(Math.abs(diff))} para cobrir tudo. Revise os custos.`;
+      } else {
+        st='❌ INVIÁVEL'; cor='#FF4B4B'; bg='rgba(255,75,75,0.08)'; border='rgba(255,75,75,0.3)';
+        detal=`Meta ${Math.abs(diffPct).toFixed(0)}% abaixo do necessário. Risco de prejuízo.`;
+      }
+      viabilidadeHtml = `
+        <div style="background:${bg};border:1px solid ${border};border-radius:16px;padding:16px;margin-bottom:10px;">
+          <div style="font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Sua meta de ${fmt(metaDesejada)}</div>
+          <div style="font-family:var(--font-display);font-weight:800;font-size:1.1rem;color:${cor};margin-bottom:6px;">${st}</div>
+          <div style="font-size:0.75rem;color:var(--muted);">${detal}</div>
+        </div>`;
+    }
+
+    // projeção html
+    let projecaoHtml = '';
+    if (dMin > 0 || dMax > 0) {
+      const label = projecaoMax > 0
+        ? `${fmt(projecaoMin)} — ${fmt(projecaoMax)}`
+        : fmt(projecaoMin);
+      const dentro = projecaoMax > 0
+        ? projecaoMin <= metaFaturamento && metaFaturamento <= projecaoMax * 1.15
+        : projecaoMin >= metaFaturamento;
+      const acima = projecaoMax > 0 ? projecaoMax < metaFaturamento : projecaoMin < metaFaturamento;
+      const sinalizacao = dentro
+        ? `<span style="color:var(--verde);font-size:0.72rem;">✅ Meta dentro da projeção</span>`
+        : acima
+          ? `<span style="color:var(--vermelho);font-size:0.72rem;">⚠️ Projeção abaixo da meta necessária</span>`
+          : `<span style="color:var(--amarelo);font-size:0.72rem;">⚠️ Projeção supera em muito a meta</span>`;
+
+      let vendedoresHtml = '';
+      if (_vendedores.filter(v=>v.nome||v.metaDiaLiq||v.metaMesLiq).length > 0) {
+        vendedoresHtml = _vendedores.filter(v=>(parseMoney(v.metaDiaLiq)||0)>0||(parseMoney(v.metaMesLiq)||0)>0).map(v=>{
+          const metaDiaLiq  = parseMoney(v.metaDiaLiq)  || 0;
+          const metaMesLiq  = parseMoney(v.metaMesLiq)  || 0;
+          const vendidoBruto= parseMoney(v.vendidoBruto)|| 0;
+          const descontos   = parseMoney(v.descontos)   || 0;
+          const vendidoLiq  = Math.max(0, vendidoBruto - descontos);
+          const metaDiaCalc = metaDiaLiq > 0 ? metaDiaLiq : (metaMesLiq > 0 ? metaMesLiq / dias : 0);
+          const metaMesCalc = metaMesLiq > 0 ? metaMesLiq : (metaDiaLiq > 0 ? metaDiaLiq * dias : 0);
+          let perfBadge = '';
+          if (vendidoLiq > 0 && metaDiaCalc > 0) {
+            const pct = (vendidoLiq / metaDiaCalc * 100);
+            const cor = pct >= 100 ? 'var(--verde)' : pct >= 75 ? 'var(--amarelo)' : 'var(--vermelho)';
+            perfBadge = ` · <span style="color:${cor};">${pct.toFixed(0)}% liq. hoje</span>`;
+          }
+          return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.75rem;flex-wrap:wrap;gap:2px;">
+            <span style="color:var(--muted);">${v.nome||'Vendedor'}${perfBadge}</span>
+            <div style="text-align:right;font-family:var(--font-mono);font-size:0.72rem;">
+              <div style="color:var(--roxo);">${metaDiaCalc>0?fmt(metaDiaCalc)+'/dia · ':''}${fmt(metaMesCalc)}/mês (liq.)</div>
+              ${vendidoBruto>0?`<div style="color:var(--muted);font-size:0.68rem;">Bruto ${fmt(vendidoBruto)} − desc ${fmt(descontos)} = <span style="color:var(--verde);">${fmt(vendidoLiq)} liq.</span></div>`:''}
+            </div>
+          </div>`;
+        }).join('');
+      }
+
+      projecaoHtml = `
+        <div class="card" style="margin-bottom:10px;">
+          <div class="card-title"><span class="dot" style="background:var(--roxo)"></span>Projeção de Vendas</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <span style="font-size:0.72rem;color:var(--muted);">Projeção mensal (${dias} dias úteis)</span>
+            ${sinalizacao}
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+            ${projecaoMin > 0 ? `<div style="background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.2);border-radius:10px;padding:10px 12px;">
+              <div style="font-size:0.6rem;color:var(--muted);margin-bottom:3px;">Bruto / mês</div>
+              <div style="font-family:var(--font-mono);font-size:0.95rem;color:var(--roxo);font-weight:600;">${fmt(projecaoMin)}</div>
+              <div style="font-size:0.62rem;color:var(--muted);margin-top:2px;">${fmt(dMin)}/dia</div>
+            </div>` : ''}
+            ${projecaoMax > 0 ? `<div style="background:rgba(0,201,123,0.06);border:1px solid rgba(0,201,123,0.2);border-radius:10px;padding:10px 12px;">
+              <div style="font-size:0.6rem;color:var(--muted);margin-bottom:3px;">Líquido / mês</div>
+              <div style="font-family:var(--font-mono);font-size:0.95rem;color:var(--verde);font-weight:600;">${fmt(projecaoMax)}</div>
+              <div style="font-size:0.62rem;color:var(--muted);margin-top:2px;">${fmt(dMax)}/dia</div>
+            </div>` : ''}
+          </div>
+          ${vendedoresHtml ? `<div style="margin-top:2px;">${vendedoresHtml}</div>` : ''}
+        </div>`;
+    }
+
+    // comparação ano anterior
+    let anoAnteriorHtml = '';
+    if (anoAnterior > 0) {
+      const varPct = ((metaFaturamento - anoAnterior) / anoAnterior) * 100;
+      const varR   = metaFaturamento - anoAnterior;
+      const sinal  = varPct >= 0 ? '+' : '';
+      const cor    = varPct >= 0 ? 'var(--verde)' : 'var(--vermelho)';
+      const obs    = varPct > 20
+        ? '⚠️ Crescimento acima de 20% — verifique sazonalidade.'
+        : varPct >= 0
+          ? '✅ Crescimento compatível com histórico.'
+          : '🔽 Meta abaixo do ano anterior — custos podem ter subido.';
+      anoAnteriorHtml = `
+        <div class="card" style="margin-bottom:10px;">
+          <div class="card-title"><span class="dot" style="background:var(--roxo)"></span>Comparação — ${mesRef || 'Ano Anterior'}</div>
+          <div class="metric-grid" style="margin-bottom:8px;">
+            <div class="metric purple">
+              <div class="metric-label">Ano anterior</div>
+              <div class="metric-value">${fmt(anoAnterior)}</div>
+              <div class="metric-sub">${mesRef||'mesmo período'}</div>
+            </div>
+            <div class="metric" style="border-color:${varPct>=0?'rgba(0,201,123,0.3)':'rgba(255,75,75,0.3)'};background:${varPct>=0?'rgba(0,201,123,0.06)':'rgba(255,75,75,0.06)'};">
+              <div class="metric-label">Crescimento necessário</div>
+              <div class="metric-value" style="color:${cor};">${sinal}${varPct.toFixed(1)}%</div>
+              <div class="metric-sub">${sinal}${fmt(varR)}</div>
+            </div>
+          </div>
+          <div style="font-size:0.75rem;color:var(--muted);">${obs}</div>
+        </div>`;
+    }
+
+    const div = document.getElementById('metaResultado');
+    div.classList.remove('hidden');
+    div.innerHTML = `
+      <div class="result-header"><span>🎯</span><span class="med-name">${filial}</span></div>
+
+      <!-- META CALCULADA -->
+      <div style="background:rgba(0,201,123,0.08);border:1px solid rgba(0,201,123,0.3);border-radius:16px;padding:20px;margin-bottom:10px;text-align:center;">
+        <div style="font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;font-weight:600;margin-bottom:8px;">Meta de Faturamento Calculada</div>
+        <div style="font-family:var(--font-mono);font-size:2.2rem;font-weight:600;color:var(--verde);line-height:1;">${fmt(metaFaturamento)}</div>
+        <div style="font-size:0.73rem;color:var(--muted);margin-top:8px;">Paga todas as contas + ${lucroDesejadoPct}% de lucro</div>
+      </div>
+
+      ${viabilidadeHtml}
+
+      <!-- MÉTRICAS -->
+      <div class="metric-grid" style="margin-bottom:10px;">
+        <div class="metric" style="border-color:rgba(255,75,75,0.3);background:rgba(255,75,75,0.06);">
+          <div class="metric-label">Total Fixos</div>
+          <div class="metric-value" style="color:var(--vermelho);">${fmt(totalFixos)}</div>
+          <div class="metric-sub">por mês</div>
+        </div>
+        <div class="metric warn">
+          <div class="metric-label">Total Variáveis</div>
+          <div class="metric-value">${fmt(variaveisReais)}</div>
+          <div class="metric-sub">${totalVarPct.toFixed(1)}% da meta</div>
+        </div>
+      </div>
+      <div class="metric-grid" style="margin-bottom:10px;">
+        <div class="metric highlight">
+          <div class="metric-label">Lucro Esperado</div>
+          <div class="metric-value">${fmt(lucroReais)}</div>
+          <div class="metric-sub">${lucroDesejadoPct}% da meta</div>
+        </div>
+        <div class="metric purple">
+          <div class="metric-label">Margem sugerida</div>
+          <div class="metric-value">${margemSugerida}%</div>
+          <div class="metric-sub">para viabilidade</div>
+        </div>
+      </div>
+
+      <!-- BREAKDOWN -->
+      <div class="card" style="margin-bottom:10px;">
+        <div class="card-title"><span class="dot"></span>Breakdown da Meta</div>
+        ${[
+          { label:'Custos Fixos',    val:totalFixos,   pct:(totalFixos/metaFaturamento*100), cor:'#FF4B4B' },
+          { label:'Custos Variáveis',val:variaveisReais,pct:totalVarPct,                     cor:'#FFD23F' },
+          { label:'Lucro Desejado',  val:lucroReais,   pct:lucroDesejadoPct,                 cor:'#00C97B' },
+        ].map(it=>`
+          <div style="margin-bottom:10px;">
+            <div class="compare-label">
+              <span style="color:${it.cor};font-weight:600;">${it.label}</span>
+              <span style="font-family:var(--font-mono);">${fmt(it.val)} <span style="color:var(--muted);font-size:0.65rem;">${it.pct.toFixed(1)}%</span></span>
+            </div>
+            <div class="bar-track"><div class="bar-fill" style="width:${Math.min(100,it.pct)}%;background:${it.cor};"></div></div>
+          </div>`).join('')}
+      </div>
+
+      ${projecaoHtml}
+
+      <!-- RESUMO VENDAS HOJE -->
+      ${(() => {
+        const dReal    = getMetaVal('metaVendaReal')    || 0;
+        const dRealLiq = getMetaVal('metaVendaRealLiq') || 0;
+        if (dReal <= 0 && dRealLiq <= 0) return '';
+        const diasU = 26;
+        const cor = dRealLiq > 0 && dMax > 0 ? (dRealLiq >= dMax ? 'var(--verde)' : 'var(--amarelo)') : 'var(--verde)';
+        const vsBruto = dMin > 0 && dReal > 0 ? ((dReal-dMin)/dMin*100) : null;
+        const vsLiq   = dMax > 0 && dRealLiq > 0 ? ((dRealLiq-dMax)/dMax*100) : null;
+        return `<div class="card" style="margin-bottom:10px;">
+          <div class="card-title"><span class="dot" style="background:var(--verde)"></span>Vendas de Hoje</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+            ${dReal > 0 ? `<div style="background:rgba(167,139,250,0.06);border:1px solid rgba(167,139,250,0.2);border-radius:10px;padding:10px 12px;">
+              <div style="font-size:0.6rem;color:var(--muted);margin-bottom:3px;">Bruto hoje</div>
+              <div style="font-family:var(--font-mono);font-size:0.95rem;color:var(--roxo);font-weight:600;">${fmt(dReal)}</div>
+              <div style="font-size:0.62rem;color:var(--muted);margin-top:2px;">→ ${fmt(dReal*diasU)}/mês${vsBruto!==null?` · <span style="color:${vsBruto>=0?'var(--verde)':'var(--vermelho)'};">${vsBruto>=0?'+':''}${vsBruto.toFixed(0)}% vs meta</span>`:''}</div>
+            </div>` : ''}
+            ${dRealLiq > 0 ? `<div style="background:rgba(0,201,123,0.06);border:1px solid rgba(0,201,123,0.2);border-radius:10px;padding:10px 12px;">
+              <div style="font-size:0.6rem;color:var(--muted);margin-bottom:3px;">Líquido hoje</div>
+              <div style="font-family:var(--font-mono);font-size:0.95rem;color:${cor};font-weight:600;">${fmt(dRealLiq)}</div>
+              <div style="font-size:0.62rem;color:var(--muted);margin-top:2px;">→ ${fmt(dRealLiq*diasU)}/mês${vsLiq!==null?` · <span style="color:${vsLiq>=0?'var(--verde)':'var(--vermelho)'};">${vsLiq>=0?'+':''}${vsLiq.toFixed(0)}% vs meta</span>`:''}</div>
+            </div>` : ''}
+          </div>
+        </div>`;
+      })()}
+
+      <!-- DETALHAMENTO FIXOS -->
+      <div class="card" style="margin-bottom:10px;">
+        <div class="card-title"><span class="dot" style="background:var(--azul)"></span>Detalhamento — Custos Fixos</div>
+        ${[
+          { label:'Aluguel', val:aluguel },
+          { label:'Internet', val:internet },
+          { label:'Luz / Energia', val:luz },
+          { label:'Sistema', val:sistema },
+          { label:'Contador', val:contador },
+          ..._funcionarios.filter(f=>parseFloat(f.salario)>0).map(f=>({ label:(f.nome||'Func.')+(f.cargo?' — '+f.cargo:''), val:parseFloat(f.salario) })),
+          ..._outrosFixos.filter(o=>parseFloat(o.valor)>0).map(o=>({ label:o.nome||'Outro', val:parseFloat(o.valor) })),
+        ].filter(i=>i.val>0).map((i,idx)=>`
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:0.78rem;">
+            <span style="color:var(--muted);">${i.label}</span>
+            <span style="font-family:var(--font-mono);color:var(--text);">${fmt(i.val)}</span>
+          </div>`).join('')}
+        <div style="display:flex;justify-content:space-between;padding:8px 0 0;font-size:0.82rem;">
+          <span style="font-weight:700;">Total</span>
+          <span style="font-family:var(--font-mono);color:var(--azul);font-weight:700;">${fmt(totalFixos)}</span>
+        </div>
+      </div>
+
+      <!-- DETALHAMENTO VARIÁVEIS -->
+      <div class="card" style="margin-bottom:10px;">
+        <div class="card-title"><span class="dot" style="background:var(--amarelo)"></span>Detalhamento — Custos Variáveis</div>
+        ${[
+          { label:'CMV (Compras)', reais:cmvR, pct:cmvPct },
+          { label:'Taxas de cartão', reais:cartaoR, pct:cartaoPct },
+          { label:'Comissões', reais:comissR, pct:comissPct },
+        ].filter(i=>i.reais>0).map(i=>`
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:0.78rem;">
+            <span style="color:var(--muted);">${i.label}</span>
+            <span style="font-family:var(--font-mono);"><span style="color:var(--amarelo);">${i.pct.toFixed(1)}%</span> <span style="color:var(--muted);font-size:0.7rem;">(${fmt(i.reais)})</span></span>
+          </div>`).join('')}
+        <div style="display:flex;justify-content:space-between;padding:8px 0 0;font-size:0.82rem;">
+          <span style="font-weight:700;">Total</span>
+          <span style="font-family:var(--font-mono);color:var(--amarelo);font-weight:700;">${totalVarPct.toFixed(1)}% (${fmt(totalVarR)})</span>
+        </div>
+      </div>
+
+      ${anoAnteriorHtml}
+
+      <!-- FÓRMULA -->
+      <div class="tip" style="margin-bottom:10px;">
+        <strong>📊 Como foi calculado:</strong><br>
+        Margem de contribuição = 100% − ${totalVarPct.toFixed(1)}% = <strong>${margemContr.toFixed(1)}%</strong><br>
+        Margem livre (c/ lucro) = ${margemContr.toFixed(1)}% − ${lucroDesejadoPct}% = <strong>${margemLivre.toFixed(1)}%</strong><br>
+        Meta = ${fmt(totalFixos)} ÷ ${(margemLivre/100).toFixed(4)} = <strong>${fmt(metaFaturamento)}</strong>
+      </div>
+
+      <button class="btn-pdf" onclick="gerarPDFMeta()">📄 Exportar Meta em PDF</button>
+    `;
+
+    window._metaSnapshot = {
+      filial, totalFixos, aluguel, internet, luz, sistema: 0, contador: 0, salarios, outrosF,
+      totalVarPct, totalVarR, cmvR, cmvPct, cartaoR, cartaoPct, comissR, comissPct,
+      lucroDesejadoPct, margemContr, margemLivre, margemSugerida,
+      metaFaturamento, metaMinima, lucroReais, variaveisReais,
+      metaDesejada, dMin, dMax, projecaoMin, projecaoMax,
+      dReal: getMetaVal('metaVendaReal') || 0,
+      dRealLiq: getMetaVal('metaVendaRealLiq') || 0,
+      anoAnterior, mesRef,
+      funcionarios: _funcionarios.map(f=>({...f})),
+      outrosFixos: _outrosFixos.map(o=>({...o})),
+      outrosVariaveis: _outrosVariaveis.map(o=>({...o})),
+      vendedores: _vendedores.map(v=>({...v}))
+    };
+
+    div.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // ── PDF META DIRETO (calcula dados na hora, não depende de calcularMeta) ──
+  function gerarPDFMetaDireto() {
+    salvarFilialAtiva();
+    const filial   = document.getElementById('metaFilial').value.trim() || 'Filial';
+    const aluguel  = getMetaVal('metaAluguel')  || 0;
+    const internet = getMetaVal('metaInternet') || 0;
+    const luz      = getMetaVal('metaLuz')      || 0;
+    const sistema  = getMetaVal('metaSistema')  || 0;
+    const contador = getMetaVal('metaContador') || 0;
+    const salarios = _modoFolha ? (getMetaVal('metaFolhaPagamento')||0) : _funcionarios.reduce((a,f)=>a+custoLiquidoFunc(f),0);
+    const outrosF  = _outrosFixos.reduce((a,o)=>a+(parseMoney(o.valor)||0),0);
+    const totalFixos = aluguel+internet+luz+sistema+contador+salarios+outrosF;
+
+    if (totalFixos <= 0) { alert('Preencha ao menos um custo fixo antes de exportar.'); return; }
+
+    const fatRef   = getMetaVal('metaFatRef')           || 0;
+    const cmvR     = getMetaVal('metaCMVReais')         || 0;
+    const cartaoR  = getMetaVal('metaCartaoReais')      || 0;
+    const comissR  = getMetaVal('metaComissoesReais')   || 0;
+    const totalVarR   = cmvR + cartaoR + comissR;
+    const totalVarPct = fatRef > 0 ? (totalVarR / fatRef) * 100 : 0;
+    const cmvPct    = fatRef > 0 ? (cmvR   /fatRef)*100 : 0;
+    const cartaoPct = fatRef > 0 ? (cartaoR/fatRef)*100 : 0;
+    const comissPct = fatRef > 0 ? (comissR/fatRef)*100 : 0;
+    const lucroDesejadoPct = getMetaVal('metaLucro') || 0;
+    const margemContr = 100 - totalVarPct;
+    const margemLivre = margemContr - lucroDesejadoPct;
+
+    if (margemLivre <= 0) { alert('Margem insuficiente para gerar o PDF.'); return; }
+
+    const metaFaturamento = totalFixos / (margemLivre / 100);
+    const lucroReais      = metaFaturamento * (lucroDesejadoPct / 100);
+    const variaveisReais  = metaFaturamento * (totalVarPct / 100);
+    const margemSugerida  = Math.max(3, parseFloat((margemContr * 0.6).toFixed(1)));
+    const dMin = getMetaVal('metaVendaDiariaMin') || 0;
+    const dMax = getMetaVal('metaVendaDiariaMax') || 0;
+    const metaDesejada = getMetaVal('metaDesejada') || 0;
+    const anoAnterior  = getMetaVal('metaAnoAnterior') || 0;
+    const mesRef = document.getElementById('metaMesRef')?.value || '';
+
+    window._metaSnapshot = {
+      filial, totalFixos, aluguel, internet, luz, sistema, contador, salarios, outrosF,
+      totalVarPct, totalVarR, cmvR, cmvPct, cartaoR, cartaoPct, comissR, comissPct,
+      lucroDesejadoPct, margemContr, margemLivre, margemSugerida,
+      metaFaturamento, lucroReais, variaveisReais,
+      metaDesejada, dMin, dMax,
+      projecaoMin: dMin * 26, projecaoMax: dMax * 26,
+      dReal: getMetaVal('metaVendaReal') || 0,
+      dRealLiq: getMetaVal('metaVendaRealLiq') || 0,
+      anoAnterior, mesRef,
+      funcionarios: _funcionarios.map(f=>({...f})),
+      outrosFixos: _outrosFixos.map(o=>({...o})),
+      outrosVariaveis: _outrosVariaveis.map(o=>({...o})),
+      vendedores: _vendedores.map(v=>({...v}))
+    };
+
+    gerarPDFMeta();
+  }
+
+  // ── PDF META ──
+  function gerarPDFMeta() {
+    const s = window._metaSnapshot;
+    if (!s) { alert('Calcule a meta primeiro.'); return; }
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const W = 210;
+    let y = 0;
+    const fmtPDF = v => {
+      const n = parseFloat(v) || 0;
+      const parts = n.toFixed(2).split('.');
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+      return 'R$ ' + parts[0] + ',' + parts[1];
+    };
+
+    // Header
+    doc.setFillColor(13,15,20); doc.rect(0,0,W,32,'F');
+    doc.setTextColor(0,201,123); doc.setFontSize(18); doc.setFont('helvetica','bold');
+    doc.text('DealMetrics', 15, 18);
+    doc.setTextColor(120,130,150); doc.setFontSize(9); doc.setFont('helvetica','normal');
+    doc.text('Relatorio de Meta de Faturamento', 15, 26);
+    doc.text(`Gerado em ${new Date().toLocaleDateString('pt-BR')}`, W-15, 26, { align:'right' });
+    y = 44;
+
+    // Título filial
+    doc.setTextColor(20,20,20); doc.setFontSize(13); doc.setFont('helvetica','bold');
+    doc.text(s.filial, 15, y); y += 10;
+
+    // Meta box
+    doc.setFillColor(0,30,20); doc.roundedRect(12,y,W-24,22,3,3,'F');
+    doc.setDrawColor(0,201,123); doc.setLineWidth(0.6); doc.roundedRect(12,y,W-24,22,3,3,'S');
+    doc.setTextColor(120,130,150); doc.setFontSize(7); doc.setFont('helvetica','normal');
+    doc.text('META DE FATURAMENTO CALCULADA', 18, y+7);
+    doc.setTextColor(0,201,123); doc.setFontSize(16); doc.setFont('helvetica','bold');
+    doc.text(fmtPDF(s.metaFaturamento), 18, y+17);
+    doc.setTextColor(120,130,150); doc.setFontSize(7.5); doc.setFont('helvetica','normal');
+    doc.text(`Cobre custos + ${s.lucroDesejadoPct}% de lucro`, W-18, y+17, { align:'right' });
+    y += 30;
+
+    // Meta desejada viabilidade
+    if (s.metaDesejada > 0) {
+      const diff = s.metaDesejada - s.metaFaturamento;
+      const diffPct = (diff/s.metaFaturamento*100);
+      let st, r, g, b;
+      if (diffPct > 25)      { st='EXAGERADA';  r=167; g=139; b=250; }
+      else if (diffPct >= 0) { st='VIAVEL';     r=0;   g=201; b=123; }
+      else if (diffPct>=-15) { st='ATENCAO';    r=255; g=210; b=63;  }
+      else                   { st='INVIAVEL';   r=255; g=75;  b=75;  }
+      doc.setFillColor(22,25,33); doc.roundedRect(12,y,W-24,16,3,3,'F');
+      doc.setDrawColor(r,g,b); doc.setLineWidth(0.5); doc.roundedRect(12,y,W-24,16,3,3,'S');
+      doc.setTextColor(r,g,b); doc.setFontSize(9); doc.setFont('helvetica','bold');
+      doc.text('Sua meta de '+fmtPDF(s.metaDesejada)+': '+st, 18, y+10);
+      y += 22;
+    }
+
+    // Resumo 4 cols
+    doc.setFillColor(22,25,33); doc.roundedRect(12,y,W-24,26,3,3,'F');
+    const colW = (W-24)/4;
+    [ { label:'FIXOS',         val:fmtPDF(s.totalFixos),   sub:null,                              cor:[255,75,75]   },
+      { label:'VARIAVEIS',     val:fmtPDF(s.variaveisReais),sub:null,                              cor:[255,210,63]  },
+      { label:'LUCRO ESPERADO',val:fmtPDF(s.lucroReais),   sub:null,                              cor:[0,201,123]   },
+      { label:'MRG SUGERIDA',  val:s.margemSugerida+'%',   sub:null,                              cor:[167,139,250] },
+    ].forEach((c,i) => {
+      const x = 18+i*colW;
+      doc.setTextColor(120,130,150); doc.setFontSize(6.5); doc.setFont('helvetica','normal'); doc.text(c.label,x,y+8);
+      doc.setTextColor(...c.cor); doc.setFontSize(8.5); doc.setFont('helvetica','bold'); doc.text(c.val,x,y+17);
+      if (c.sub) { doc.setTextColor(120,130,150); doc.setFontSize(6.5); doc.setFont('helvetica','normal'); doc.text(c.sub,x,y+23); }
+    });
+    y += 34;
+
+    // Breakdown barras
+    doc.setTextColor(20,20,20); doc.setFontSize(9); doc.setFont('helvetica','bold');
+    doc.text('Breakdown da Meta', 15, y); y += 7;
+    [
+      { label:'Custos Fixos',    val:s.totalFixos,    pct:(s.totalFixos/s.metaFaturamento*100), cor:[255,75,75]  },
+      { label:'Custos Variaveis',val:s.variaveisReais,pct:s.totalVarPct,                        cor:[255,210,63] },
+      { label:'Lucro Desejado',  val:s.lucroReais,    pct:s.lucroDesejadoPct,                   cor:[0,201,123]  },
+    ].forEach(it => {
+      doc.setTextColor(120,130,150); doc.setFontSize(7.5); doc.setFont('helvetica','normal'); doc.text(it.label,15,y);
+      doc.setTextColor(...it.cor); doc.text(fmtPDF(it.val)+'  ('+it.pct.toFixed(1)+'%)',W-15,y,{align:'right'});
+      doc.setFillColor(30,35,45); doc.roundedRect(15,y+2,W-30,4,1,1,'F');
+      doc.setFillColor(...it.cor); doc.roundedRect(15,y+2,Math.max(2,(W-30)*it.pct/100),4,1,1,'F');
+      y += 13;
+    });
+    y += 4;
+
+    // Projeção vendas
+    if (s.dMin > 0 || s.dMax > 0) {
+      if (y > 240) { doc.addPage(); y = 20; }
+      doc.setTextColor(20,20,20); doc.setFontSize(9); doc.setFont('helvetica','bold');
+      doc.text('Projecao de Vendas (26 dias uteis)', 15, y); y += 7;
+      // Dois cards lado a lado com divisória
+      const cardH = 24;
+      const midX = W / 2;
+      doc.setFillColor(22,25,33); doc.roundedRect(12,y,W-24,cardH,3,3,'F');
+      // divisória vertical central
+      doc.setDrawColor(40,45,55); doc.setLineWidth(0.4);
+      doc.line(midX, y+4, midX, y+cardH-4);
+      if (s.dMin > 0) {
+        doc.setTextColor(120,130,150); doc.setFontSize(6.5); doc.setFont('helvetica','normal');
+        doc.text('BRUTO / MES', 18, y+8);
+        doc.setTextColor(167,139,250); doc.setFontSize(10); doc.setFont('helvetica','bold');
+        doc.text(fmtPDF(s.projecaoMin), 18, y+17);
+        doc.setTextColor(100,110,130); doc.setFontSize(7); doc.setFont('helvetica','normal');
+        doc.text(fmtPDF(s.dMin)+'/dia', 18, y+23);
+      }
+      if (s.dMax > 0) {
+        doc.setTextColor(120,130,150); doc.setFontSize(6.5); doc.setFont('helvetica','normal');
+        doc.text('LIQUIDO / MES', midX+6, y+8);
+        doc.setTextColor(0,201,123); doc.setFontSize(10); doc.setFont('helvetica','bold');
+        doc.text(fmtPDF(s.projecaoMax), midX+6, y+17);
+        doc.setTextColor(100,110,130); doc.setFontSize(7); doc.setFont('helvetica','normal');
+        doc.text(fmtPDF(s.dMax)+'/dia', midX+6, y+23);
+      }
+      y += cardH + 6;
+
+      // Vendas de hoje
+      if (s.dReal > 0 || s.dRealLiq > 0) {
+        doc.setTextColor(20,20,20); doc.setFontSize(8); doc.setFont('helvetica','bold');
+        doc.text('Vendas de Hoje', 15, y); y += 6;
+        doc.setFillColor(22,25,33); doc.roundedRect(12,y,W-24,18,3,3,'F');
+        if (s.dReal > 0) {
+          doc.setTextColor(120,130,150); doc.setFontSize(6.5); doc.setFont('helvetica','normal'); doc.text('BRUTO HOJE',18,y+6);
+          doc.setTextColor(167,139,250); doc.setFontSize(9); doc.setFont('helvetica','bold'); doc.text(fmtPDF(s.dReal),18,y+14);
+        }
+        if (s.dRealLiq > 0) {
+          const x2 = 18 + halfW + 8;
+          doc.setTextColor(120,130,150); doc.setFontSize(6.5); doc.setFont('helvetica','normal'); doc.text('LIQUIDO HOJE',x2,y+6);
+          doc.setTextColor(0,201,123); doc.setFontSize(9); doc.setFont('helvetica','bold'); doc.text(fmtPDF(s.dRealLiq),x2,y+14);
+        }
+        y += 24;
+      }
+
+      // vendedores
+      const vends = s.vendedores.filter(v=>(parseFloat(v.metaDiaLiq)||0)>0||(parseFloat(v.metaMesLiq)||0)>0);
+      if (vends.length > 0) {
+        doc.setTextColor(20,20,20); doc.setFontSize(8); doc.setFont('helvetica','bold');
+        doc.text('Vendedores', 15, y); y += 6;
+        vends.forEach((v,idx) => {
+          if (y > 270) { doc.addPage(); y = 20; }
+          const metaDiaLiq   = parseFloat(v.metaDiaLiq)   || 0;
+          const metaMesLiq   = parseFloat(v.metaMesLiq)   || 0;
+          const vendidoBruto = parseFloat(v.vendidoBruto) || 0;
+          const descontos    = parseFloat(v.descontos)    || 0;
+          const vendidoLiq   = Math.max(0, vendidoBruto - descontos);
+          const metaDiaCalc  = metaDiaLiq > 0 ? metaDiaLiq : (metaMesLiq > 0 ? metaMesLiq/26 : 0);
+          const metaMesCalc  = metaMesLiq > 0 ? metaMesLiq : (metaDiaLiq > 0 ? metaDiaLiq*26 : 0);
+          const rowH = vendidoBruto > 0 ? 14 : 9;
+          doc.setFillColor(idx%2===0?22:26,idx%2===0?25:28,idx%2===0?33:38); doc.rect(12,y-1,W-24,rowH,'F');
+          doc.setTextColor(180,185,200); doc.setFontSize(7.5); doc.setFont('helvetica','normal');
+          doc.text(v.nome||'Vendedor',16,y+4);
+          doc.setTextColor(167,139,250);
+          doc.text((metaDiaCalc>0?fmtPDF(metaDiaCalc)+'/dia · ':'')+fmtPDF(metaMesCalc)+'/mes (liq.)',W-16,y+4,{align:'right'});
+          if (vendidoBruto > 0) {
+            doc.setTextColor(100,110,130); doc.setFontSize(6.5);
+            doc.text('Bruto R$ '+vendidoBruto.toFixed(2)+' - desc R$ '+descontos.toFixed(2)+' = liq. R$ '+vendidoLiq.toFixed(2),16,y+10);
+          }
+          y += rowH + 2;
+        });
+        y += 4;
+      }
+    }
+
+    // Custos fixos detalhados
+    if (y > 230) { doc.addPage(); y = 20; }
+    doc.setTextColor(20,20,20); doc.setFontSize(9); doc.setFont('helvetica','bold');
+    doc.text('Detalhamento — Custos Fixos', 15, y); y += 7;
+    const fixoItens = [
+      {label:'Aluguel',      val:s.aluguel},
+      {label:'Internet',     val:s.internet},
+      {label:'Luz / Energia',val:s.luz},
+      {label:'Sistema',      val:s.sistema},
+      {label:'Contador',     val:s.contador},
+      ...( s.salarios > 0 ? [{label:'Total Funcionários', val: s.salarios}] : [] ),
+      ...s.outrosFixos.filter(o=>parseFloat(o.valor)>0).map(o=>({label:o.nome||'Outro',val:parseFloat(o.valor)})),
+    ].filter(i=>i.val>0);
+    fixoItens.forEach((it,idx) => {
+      if (y > 270) { doc.addPage(); y = 20; }
+      doc.setFillColor(idx%2===0?22:26,idx%2===0?25:28,idx%2===0?33:38); doc.rect(12,y-1,W-24,7,'F');
+      doc.setTextColor(180,185,200); doc.setFontSize(7.5); doc.setFont('helvetica','normal'); doc.text(it.label,16,y+4);
+      doc.setTextColor(40,40,40); doc.text(fmtPDF(it.val),W-16,y+4,{align:'right'}); y += 7;
+    });
+    doc.setFillColor(0,40,25); doc.rect(12,y-1,W-24,8,'F');
+    doc.setTextColor(0,201,123); doc.setFontSize(8); doc.setFont('helvetica','bold');
+    doc.text('TOTAL FIXOS',16,y+5); doc.text(fmtPDF(s.totalFixos),W-16,y+5,{align:'right'}); y += 14;
+
+    // Custos variáveis
+    if (y > 230) { doc.addPage(); y = 20; }
+    doc.setTextColor(20,20,20); doc.setFontSize(9); doc.setFont('helvetica','bold');
+    doc.text('Custos Variaveis', 15, y); y += 7;
+    [
+      {label:'CMV (Compras)',   reais:s.cmvR,    pct:s.cmvPct},
+      {label:'Taxas de Cartao', reais:s.cartaoR, pct:s.cartaoPct},
+      {label:'Comissoes',       reais:s.comissR, pct:s.comissPct},
+    ].filter(i=>i.reais>0).forEach((it,idx) => {
+      doc.setFillColor(idx%2===0?22:26,idx%2===0?25:28,idx%2===0?33:38); doc.rect(12,y-1,W-24,7,'F');
+      doc.setTextColor(180,185,200); doc.setFontSize(7.5); doc.setFont('helvetica','normal'); doc.text(it.label,16,y+4);
+      doc.setTextColor(255,210,63); doc.text(it.pct.toFixed(1)+'%  ('+fmtPDF(it.reais)+')',W-16,y+4,{align:'right'}); y += 7;
+    });
+    y += 6;
+
+    // Fórmula
+    if (y > 240) { doc.addPage(); y = 20; }
+    doc.setFillColor(20,25,35); doc.roundedRect(12,y,W-24,32,3,3,'F');
+    doc.setTextColor(26,115,232); doc.setFontSize(8); doc.setFont('helvetica','bold'); doc.text('Como foi calculado:', 18, y+8);
+    doc.setTextColor(160,170,190); doc.setFontSize(7.5); doc.setFont('helvetica','normal');
+    doc.text(`Margem contribuicao = 100% - ${s.totalVarPct.toFixed(1)}% = ${s.margemContr.toFixed(1)}%`, 18, y+16);
+    doc.text(`Margem livre = ${s.margemContr.toFixed(1)}% - ${s.lucroDesejadoPct}% = ${s.margemLivre.toFixed(1)}%`, 18, y+22);
+    doc.setTextColor(0,201,123); doc.setFont('helvetica','bold');
+    doc.text(`Meta = ${fmtPDF(s.totalFixos)} / ${(s.margemLivre/100).toFixed(4)} = ${fmtPDF(s.metaFaturamento)}`, 18, y+29);
+    y += 40;
+
+    // Ano anterior
+    if (s.anoAnterior > 0) {
+      if (y > 240) { doc.addPage(); y = 20; }
+      const vPct = ((s.metaFaturamento - s.anoAnterior)/s.anoAnterior*100);
+      const sinal = vPct >= 0 ? '+' : '';
+      doc.setTextColor(20,20,20); doc.setFontSize(9); doc.setFont('helvetica','bold');
+      doc.text('Comparacao - '+(s.mesRef||'Ano Anterior'), 15, y); y += 7;
+      doc.setFillColor(22,25,33); doc.roundedRect(12,y,W-24,18,3,3,'F');
+      doc.setTextColor(120,130,150); doc.setFontSize(7); doc.setFont('helvetica','normal');
+      doc.text('ANO ANTERIOR',18,y+7); doc.text('META ATUAL',W/2,y+7); doc.text('VARIACAO',W-50,y+7);
+      doc.setTextColor(167,139,250); doc.setFontSize(9); doc.setFont('helvetica','bold');
+      doc.text(fmtPDF(s.anoAnterior),18,y+15);
+      doc.setTextColor(0,201,123); doc.text(fmtPDF(s.metaFaturamento),W/2,y+15);
+      doc.setTextColor(vPct>=0?0:255,vPct>=0?201:75,vPct>=0?123:75);
+      doc.text(sinal+vPct.toFixed(1)+'%',W-50,y+15); y += 26;
+    }
+
+    // Footer
+    const pc = doc.getNumberOfPages();
+    for (let i=1;i<=pc;i++) {
+      doc.setPage(i);
+      doc.setTextColor(80,90,110); doc.setFontSize(7); doc.setFont('helvetica','normal');
+      doc.text('Mayara Almeida · DealMetrics',15,290);
+      doc.text(`${i} / ${pc}`,W-15,290,{align:'right'});
+    }
+    const _fn2 = `dealmetrics-meta-${s.filial.replace(/\s+/g,'-').toLowerCase()}-${new Date().toISOString().slice(0,10)}.pdf`;
+    try { const _b=doc.output('blob'),_u=URL.createObjectURL(_b),_a=document.createElement('a'); _a.href=_u; _a.download=_fn2; document.body.appendChild(_a); _a.click(); setTimeout(()=>{URL.revokeObjectURL(_u);document.body.removeChild(_a);},2000); } catch(e){ doc.save(_fn2); }
+  }
+
+  function atualizarResumoRelatorio() {
+    const cp = document.getElementById('relat-count-promos');
+    const ct = document.getElementById('relat-count-testes');
+    const cm = document.getElementById('relat-count-meta');
+    if (cp) cp.textContent = produtos.length;
+    if (ct) ct.textContent = (_minhaPromoSnapshots || []).length;
+    if (cm) {
+      const snap = window._metaSnapshot;
+      cm.textContent = snap ? new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0}).format(snap.metaFaturamento) : '—';
+    }
+  }
+
+  // ── RELATÓRIO COMPLETO (promoções + meta) ──
+  function gerarRelatorioCompleto() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const W = 210;
+    let y = 0;
+    const titulo    = (document.getElementById('relatorioTitulo')?.value.trim()) || 'Relatorio Completo';
+    const responsavel = (document.getElementById('relatorioResponsavel')?.value.trim()) || 'DealMetrics';
+    const obs       = document.getElementById('relatorioObs')?.value.trim() || '';
+    const snap      = window._metaSnapshot || null;
+
+    const fmtPDF = v => {
+      const n = parseFloat(v) || 0;
+      const parts = n.toFixed(2).split('.');
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+      return 'R$ ' + parts[0] + ',' + parts[1];
+    };
+    const titleColor = () => doc.setTextColor(20,20,20);
+
+    // ── CAPA ──
+    doc.setFillColor(13,15,20); doc.rect(0,0,W,40,'F');
+    doc.setTextColor(167,139,250); doc.setFontSize(20); doc.setFont('helvetica','bold');
+    doc.text('DealMetrics', 15, 20);
+    doc.setTextColor(120,130,150); doc.setFontSize(9); doc.setFont('helvetica','normal');
+    doc.text(titulo, 15, 29);
+    doc.text('Gerado em ' + new Date().toLocaleDateString('pt-BR') + ' · ' + responsavel, 15, 36);
+    if (obs) { doc.setTextColor(100,110,130); doc.setFontSize(7.5); doc.text(obs, W-15, 36, {align:'right'}); }
+    y = 52;
+
+    // ── SEÇÃO 1: RESUMO GERAL ──
+    doc.setFillColor(22,25,33); doc.roundedRect(12,y,W-24,28,3,3,'F');
+    const colW3 = (W-24)/2;
+    [
+      {label:'PRODUTOS CADASTRADOS', val: String(produtos.length),            cor:[255,210,63]},
+      {label:'META CALCULADA',       val: snap ? fmtPDF(snap.metaFaturamento) : '—', cor:[0,201,123]},
+    ].forEach((c,i) => {
+      const x = 18 + i*colW3;
+      doc.setTextColor(100,110,130); doc.setFontSize(6); doc.setFont('helvetica','normal'); doc.text(c.label, x, y+9);
+      doc.setTextColor(...c.cor); doc.setFontSize(10); doc.setFont('helvetica','bold'); doc.text(c.val, x, y+20);
+    });
+    y += 36;
+
+    // ── SEÇÃO 2: PROMOÇÕES POR PRODUTO ──
+    if (produtos.length > 0) {
+      if (y > 240) { doc.addPage(); y = 20; }
+      titleColor(); doc.setFontSize(11); doc.setFont('helvetica','bold');
+      doc.text('1. Analise de Promocoes por Produto', 15, y); y += 4;
+      doc.setDrawColor(255,210,63); doc.setLineWidth(0.5); doc.line(15,y,W-15,y); y += 8;
+
+      // tabela cabeçalho
+      doc.setFillColor(255,210,63); doc.rect(12,y,W-24,7,'F');
+      doc.setTextColor(0,0,0); doc.setFontSize(6.5); doc.setFont('helvetica','bold');
+      doc.text('PRODUTO', 16, y+5); doc.text('CUSTO', 72, y+5); doc.text('CONCORRENTE', 90, y+5);
+      doc.text('VD. SUGERIDA', 126, y+5); doc.text('LUCRO', 158, y+5); doc.text('MRG%', 178, y+5);
+      y += 9;
+
+      produtos.forEach((p, i) => {
+        if (y > 265) { doc.addPage(); y = 20; }
+        const precoMin = p.custo * (1 + (p.margemMin||15) / 100);
+        const vendaSug = Math.max(precoMin, arredondarBonito(p.concorrente * 0.95));
+        const lucroUn  = vendaSug - p.custo;
+        const lucroPct = (lucroUn / vendaSug * 100);
+        const ok = p.concorrente >= precoMin;
+        doc.setFillColor(i%2===0?245:250, i%2===0?245:248, i%2===0?248:252);
+        doc.rect(12, y-1, W-24, 8, 'F');
+        doc.setFontSize(7); doc.setFont('helvetica','normal');
+        doc.setTextColor(30,30,30);
+        doc.text(p.nome.length > 22 ? p.nome.substring(0,20)+'…' : p.nome, 16, y+5);
+        doc.text('R$ '+p.custo.toFixed(2), 72, y+5);
+        doc.text('R$ '+p.concorrente.toFixed(2), 90, y+5);
+        doc.setTextColor(ok ? 0 : 200, ok ? 140 : 50, ok ? 80 : 50);
+        doc.text('R$ '+vendaSug.toFixed(2), 126, y+5);
+        doc.setTextColor(0,140,80);
+        doc.text('R$ '+lucroUn.toFixed(2), 158, y+5);
+        doc.setTextColor(100,80,180);
+        doc.text(lucroPct.toFixed(1)+'%', 181, y+5);
+        y += 8;
+      });
+      y += 6;
+
+      // Promoções sugeridas por produto
+      if (y > 240) { doc.addPage(); y = 20; }
+      titleColor(); doc.setFontSize(10); doc.setFont('helvetica','bold');
+      doc.text('1.1 Promocoes Sugeridas por Produto', 15, y); y += 8;
+
+      produtos.forEach(p => {
+        const promos = gerarPromos(p.custo, p.concorrente, p.margemMin||15);
+        if (promos.length === 0) return;
+        if (y > 260) { doc.addPage(); y = 20; }
+        doc.setTextColor(0,130,80); doc.setFontSize(7.5); doc.setFont('helvetica','bold');
+        doc.text(p.nome, 15, y); y += 5;
+        promos.forEach(pr => {
+          if (y > 272) { doc.addPage(); y = 20; }
+          const ticketUn  = pr.precoTotal / pr.qtd;
+          const lucroUn   = ticketUn - p.custo;
+          const lucroPct  = (lucroUn / ticketUn * 100);
+          const lucroTotal= pr.precoTotal - (p.custo * pr.qtd);
+          doc.setFontSize(6.5); doc.setFont('helvetica','normal'); doc.setTextColor(50,50,50);
+          doc.text(`  ${pr.tag}  |  Lucro/un: R$ ${lucroUn.toFixed(2)} (${lucroPct.toFixed(1)}%)  |  Total: R$ ${lucroTotal.toFixed(2)}  |  ${pr.statusLabel}`, 15, y);
+          y += 5;
+        });
+        y += 2;
+      });
+    }
+
+    // ── SEÇÃO 3: TESTES MANUAIS DE PROMOÇÃO ──
+    if ((_minhaPromoSnapshots||[]).length > 0) {
+      if (y > 240) { doc.addPage(); y = 20; }
+      titleColor(); doc.setFontSize(11); doc.setFont('helvetica','bold');
+      doc.text('2. Testes Manuais de Promocao', 15, y); y += 4;
+      doc.setDrawColor(167,139,250); doc.setLineWidth(0.5); doc.line(15,y,W-15,y); y += 8;
+
+      _minhaPromoSnapshots.forEach((snap2, idx) => {
+        if (y > 250) { doc.addPage(); y = 20; }
+        const {qtd:pQtd, precoTotal:pPreco, custo:custoA, concorrente:concA, margemMin:mrgA, nomeConcorrente:nomeConcA, nomeMed:nomeMedA} = snap2;
+        const pCustoTotal = custoA * pQtd;
+        const pPrecoMin   = pCustoTotal * (1 + mrgA/100);
+        const pPrecoUn    = pPreco / pQtd;
+        const pLucroUn    = pPrecoUn - custoA;
+        const pLucroTotal = pPreco - pCustoTotal;
+        const pMargemReal = (pLucroTotal / pPreco) * 100;
+        const pIsViavel   = pPreco >= pPrecoMin;
+        const pMargemOk   = pMargemReal >= mrgA;
+        let vR, vG, vB, vTxt;
+        if (pIsViavel && pMargemOk)       { vR=0;   vG=160; vB=90;  vTxt='VIAVEL'; }
+        else if (pIsViavel && !pMargemOk) { vR=200; vG=160; vB=0;   vTxt='ATENCAO'; }
+        else                              { vR=200; vG=50;  vB=50;  vTxt='INVIAVEL'; }
+
+        doc.setFillColor(248,248,252); doc.roundedRect(12,y,W-24,32,2,2,'F');
+        doc.setDrawColor(vR,vG,vB); doc.setLineWidth(0.4); doc.roundedRect(12,y,W-24,32,2,2,'S');
+        doc.setTextColor(vR,vG,vB); doc.setFontSize(8); doc.setFont('helvetica','bold');
+        doc.text(vTxt + (nomeMedA ? '  —  ' + nomeMedA : ''), 17, y+8);
+        doc.setTextColor(40,40,40); doc.setFontSize(7); doc.setFont('helvetica','normal');
+        doc.text(`Promocao: ${pQtd} un por R$ ${pPreco.toFixed(2)}  |  Preco/un: R$ ${pPrecoUn.toFixed(2)}`, 17, y+16);
+        doc.text(`Lucro/un: R$ ${pLucroUn.toFixed(2)}  |  Lucro total: R$ ${pLucroTotal.toFixed(2)}  |  Margem: ${pMargemReal.toFixed(1)}%  (min: ${mrgA}%)`, 17, y+23);
+        doc.setTextColor(100,100,100); doc.setFontSize(6.5);
+        doc.text(`Preco minimo viavel: R$ ${pPrecoMin.toFixed(2)}  |  Concorrente (${nomeConcA}): R$ ${concA.toFixed(2)}`, 17, y+29);
+        y += 38;
+      });
+    }
+
+    // ── SEÇÃO 4: DADOS DE META ──
+    if (snap) {
+      if (y > 230) { doc.addPage(); y = 20; }
+      titleColor(); doc.setFontSize(11); doc.setFont('helvetica','bold');
+      doc.text('3. Dados de Meta — ' + snap.filial, 15, y); y += 4;
+      doc.setDrawColor(0,201,123); doc.setLineWidth(0.5); doc.line(15,y,W-15,y); y += 8;
+
+      // Caixa principal da meta
+      doc.setFillColor(230,250,240); doc.roundedRect(12,y,W-24,20,3,3,'F');
+      doc.setDrawColor(0,180,110); doc.setLineWidth(0.5); doc.roundedRect(12,y,W-24,20,3,3,'S');
+      doc.setTextColor(80,90,100); doc.setFontSize(7); doc.setFont('helvetica','normal');
+      doc.text('META DE FATURAMENTO CALCULADA', 18, y+7);
+      doc.setTextColor(0,130,80); doc.setFontSize(14); doc.setFont('helvetica','bold');
+      doc.text(fmtPDF(snap.metaFaturamento), 18, y+16);
+      doc.setTextColor(80,90,100); doc.setFontSize(7); doc.setFont('helvetica','normal');
+      doc.text('Cobre custos + '+snap.lucroDesejadoPct+'% de lucro', W-18, y+13, {align:'right'});
+      y += 28;
+
+      // Resumo 4 cols
+      doc.setFillColor(240,242,248); doc.roundedRect(12,y,W-24,26,3,3,'F');
+      const colW4 = (W-24)/4;
+      [{label:'FIXOS',val:fmtPDF(snap.totalFixos),cor:[180,60,60]},
+       {label:'VARIAVEIS',val:fmtPDF(snap.variaveisReais),cor:[160,130,0]},
+       {label:'LUCRO ESPERADO',val:fmtPDF(snap.lucroReais),cor:[0,140,80]},
+       {label:'MRG SUGERIDA',val:snap.margemSugerida+'%',cor:[100,80,180]}
+      ].forEach((c,i) => {
+        const x = 18+i*colW4;
+        doc.setTextColor(100,110,130); doc.setFontSize(6); doc.setFont('helvetica','normal'); doc.text(c.label,x,y+9);
+        doc.setTextColor(...c.cor); doc.setFontSize(8); doc.setFont('helvetica','bold'); doc.text(c.val,x,y+19);
+      });
+      y += 34;
+
+      // Breakdown
+      titleColor(); doc.setFontSize(9); doc.setFont('helvetica','bold');
+      doc.text('Breakdown da Meta', 15, y); y += 7;
+      [{label:'Custos Fixos',val:snap.totalFixos,pct:(snap.totalFixos/snap.metaFaturamento*100),cor:[180,60,60]},
+       {label:'Custos Variaveis',val:snap.variaveisReais,pct:snap.totalVarPct,cor:[160,130,0]},
+       {label:'Lucro Desejado',val:snap.lucroReais,pct:snap.lucroDesejadoPct,cor:[0,140,80]}
+      ].forEach(it => {
+        if (y > 270) { doc.addPage(); y = 20; }
+        doc.setTextColor(60,60,60); doc.setFontSize(7.5); doc.setFont('helvetica','normal'); doc.text(it.label,15,y);
+        doc.setTextColor(...it.cor); doc.text(fmtPDF(it.val)+'  ('+it.pct.toFixed(1)+'%)',W-15,y,{align:'right'});
+        doc.setFillColor(220,222,230); doc.roundedRect(15,y+2,W-30,4,1,1,'F');
+        doc.setFillColor(...it.cor); doc.roundedRect(15,y+2,Math.max(2,(W-30)*it.pct/100),4,1,1,'F');
+        y += 13;
+      });
+      y += 4;
+
+      // Custos fixos detalhados
+      if (y > 240) { doc.addPage(); y = 20; }
+      titleColor(); doc.setFontSize(9); doc.setFont('helvetica','bold');
+      doc.text('Detalhamento — Custos Fixos', 15, y); y += 7;
+      const fixoItens2 = [
+        {label:'Aluguel',val:snap.aluguel}, {label:'Internet',val:snap.internet},
+        {label:'Luz / Energia',val:snap.luz}, {label:'Sistema',val:snap.sistema},
+        {label:'Contador',val:snap.contador},
+        ...(snap.salarios>0?[{label:'Total Funcionarios',val:snap.salarios}]:[]),
+        ...(snap.outrosFixos||[]).filter(o=>parseFloat(o.valor)>0).map(o=>({label:o.nome||'Outro',val:parseFloat(o.valor)}))
+      ].filter(i=>i.val>0);
+      fixoItens2.forEach((it,idx) => {
+        if (y > 272) { doc.addPage(); y = 20; }
+        doc.setFillColor(idx%2===0?245:250,idx%2===0?245:248,idx%2===0?248:252); doc.rect(12,y-1,W-24,7,'F');
+        doc.setTextColor(60,70,90); doc.setFontSize(7.5); doc.setFont('helvetica','normal'); doc.text(it.label,16,y+4);
+        doc.setTextColor(30,30,30); doc.text(fmtPDF(it.val),W-16,y+4,{align:'right'}); y += 7;
+      });
+      doc.setFillColor(200,240,220); doc.rect(12,y-1,W-24,8,'F');
+      doc.setTextColor(0,130,80); doc.setFontSize(8); doc.setFont('helvetica','bold');
+      doc.text('TOTAL FIXOS',16,y+5); doc.text(fmtPDF(snap.totalFixos),W-16,y+5,{align:'right'}); y += 14;
+
+      // Custos variáveis
+      if (y > 240) { doc.addPage(); y = 20; }
+      titleColor(); doc.setFontSize(9); doc.setFont('helvetica','bold');
+      doc.text('Custos Variaveis', 15, y); y += 7;
+      [{label:'CMV (Compras)',reais:snap.cmvR,pct:snap.cmvPct},
+       {label:'Taxas de Cartao',reais:snap.cartaoR,pct:snap.cartaoPct},
+       {label:'Comissoes',reais:snap.comissR,pct:snap.comissPct}
+      ].filter(i=>i.reais>0).forEach((it,idx) => {
+        if (y > 272) { doc.addPage(); y = 20; }
+        doc.setFillColor(idx%2===0?245:250,idx%2===0?245:248,idx%2===0?248:252); doc.rect(12,y-1,W-24,7,'F');
+        doc.setTextColor(60,70,90); doc.setFontSize(7.5); doc.setFont('helvetica','normal'); doc.text(it.label,16,y+4);
+        doc.setTextColor(140,110,0); doc.text(it.pct.toFixed(1)+'%  ('+fmtPDF(it.reais)+')',W-16,y+4,{align:'right'}); y += 7;
+      });
+      y += 6;
+
+      // Fórmula
+      if (y > 245) { doc.addPage(); y = 20; }
+      doc.setFillColor(235,240,255); doc.roundedRect(12,y,W-24,32,3,3,'F');
+      doc.setTextColor(60,80,180); doc.setFontSize(8); doc.setFont('helvetica','bold'); doc.text('Como foi calculado:', 18, y+8);
+      doc.setTextColor(60,60,80); doc.setFontSize(7.5); doc.setFont('helvetica','normal');
+      doc.text('Margem contribuicao = 100% - '+snap.totalVarPct.toFixed(1)+'% = '+snap.margemContr.toFixed(1)+'%', 18, y+16);
+      doc.text('Margem livre = '+snap.margemContr.toFixed(1)+'% - '+snap.lucroDesejadoPct+'% = '+snap.margemLivre.toFixed(1)+'%', 18, y+22);
+      doc.setTextColor(0,130,80); doc.setFont('helvetica','bold');
+      doc.text('Meta = '+fmtPDF(snap.totalFixos)+' / '+(snap.margemLivre/100).toFixed(4)+' = '+fmtPDF(snap.metaFaturamento), 18, y+29);
+      y += 40;
+
+      // Ano anterior
+      if (snap.anoAnterior > 0) {
+        if (y > 245) { doc.addPage(); y = 20; }
+        const vPct = ((snap.metaFaturamento - snap.anoAnterior)/snap.anoAnterior*100);
+        const sinal = vPct >= 0 ? '+' : '';
+        titleColor(); doc.setFontSize(9); doc.setFont('helvetica','bold');
+        doc.text('Comparacao - '+(snap.mesRef||'Ano Anterior'), 15, y); y += 7;
+        doc.setFillColor(240,242,248); doc.roundedRect(12,y,W-24,18,3,3,'F');
+        doc.setTextColor(100,110,130); doc.setFontSize(7); doc.setFont('helvetica','normal');
+        doc.text('ANO ANTERIOR',18,y+7); doc.text('META ATUAL',W/2,y+7); doc.text('VARIACAO',W-50,y+7);
+        doc.setTextColor(100,80,180); doc.setFontSize(9); doc.setFont('helvetica','bold');
+        doc.text(fmtPDF(snap.anoAnterior),18,y+15);
+        doc.setTextColor(0,130,80); doc.text(fmtPDF(snap.metaFaturamento),W/2,y+15);
+        doc.setTextColor(vPct>=0?0:180,vPct>=0?130:50,vPct>=0?80:50);
+        doc.text(sinal+vPct.toFixed(1)+'%',W-50,y+15); y += 26;
+      }
+
+      // Meta desejada
+      if (snap.metaDesejada > 0) {
+        if (y > 245) { doc.addPage(); y = 20; }
+        const diff = snap.metaDesejada - snap.metaFaturamento;
+        const diffPct = (diff/snap.metaFaturamento*100);
+        let st, r, g, b;
+        if (diffPct>25)      {st='EXAGERADA'; r=100;g=80;b=180;}
+        else if (diffPct>=0) {st='VIAVEL';    r=0;  g=130;b=80;}
+        else if (diffPct>=-15){st='ATENCAO';  r=160;g=130;b=0;}
+        else                  {st='INVIAVEL'; r=180;g=50;b=50;}
+        doc.setFillColor(248,248,252); doc.roundedRect(12,y,W-24,16,3,3,'F');
+        doc.setDrawColor(r,g,b); doc.setLineWidth(0.5); doc.roundedRect(12,y,W-24,16,3,3,'S');
+        doc.setTextColor(r,g,b); doc.setFontSize(9); doc.setFont('helvetica','bold');
+        doc.text('Meta desejada de '+fmtPDF(snap.metaDesejada)+': '+st, 18, y+10); y += 22;
+      }
+    }
+
+    // ── FOOTER ──
+    const pc = doc.getNumberOfPages();
+    for (let i=1;i<=pc;i++) {
+      doc.setPage(i);
+      doc.setTextColor(150,155,170); doc.setFontSize(7); doc.setFont('helvetica','normal');
+      doc.text(responsavel + ' · DealMetrics', 15, 290);
+      doc.text(i+' / '+pc, W-15, 290, {align:'right'});
+    }
+
+    const fn = 'dealmetrics-relatorio-completo-'+new Date().toISOString().slice(0,10)+'.pdf';
+    try {
+      const b=doc.output('blob'), u=URL.createObjectURL(b), a=document.createElement('a');
+      a.href=u; a.download=fn; document.body.appendChild(a); a.click();
+      setTimeout(()=>{URL.revokeObjectURL(u);document.body.removeChild(a);},2000);
+    } catch(e){ doc.save(fn); }
   }
 
   function renderHistoricoPromos() {

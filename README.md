@@ -2,7 +2,20 @@
 
 > Ferramenta web para precificação estratégica, análise de concorrentes, simulação de promoções e cálculo de metas de faturamento. Funciona em qualquer segmento do varejo.
 
+![HTML](https://img.shields.io/badge/HTML5-E34F26?style=flat&logo=html5&logoColor=white)
+![CSS](https://img.shields.io/badge/CSS3-1572B6?style=flat&logo=css3&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black)
+![Netlify](https://img.shields.io/badge/Netlify-00C7B7?style=flat&logo=netlify&logoColor=white)
+
 🔗 **[Acessar agora → deal-metrics.netlify.app](https://deal-metrics.netlify.app)**
+
+---
+
+## Contexto
+
+Gestores do varejo perdem tempo precificando produtos manualmente em planilhas, sem visibilidade da concorrência e sem um cálculo estruturado de meta de faturamento. O DealMetrics resolve isso numa interface rápida, que roda direto no navegador — sem cadastro, sem servidor, sem instalação.
+
+Nasceu no contexto do varejo farmacêutico e foi expandido para atender qualquer segmento comercial.
 
 ---
 
@@ -88,8 +101,6 @@
 ## Visão Geral
 
 O DealMetrics é uma aplicação single-page (HTML/CSS/JS puro, sem backend) desenvolvida para apoiar gestores e analistas comerciais do varejo na precificação estratégica de produtos. A partir do custo de aquisição e dos preços praticados pela concorrência, o app calcula o preço de venda ideal, simula promoções por quantidade, avalia a viabilidade de cada cenário e calcula a meta de faturamento real com base na estrutura de custos da operação.
-
-A ferramenta nasceu no contexto do varejo farmacêutico e foi expandida para atender qualquer segmento comercial.
 
 Toda a aplicação roda inteiramente no navegador — sem servidor, sem banco de dados remoto, sem login. Os dados ficam no `localStorage` do dispositivo e são limpos automaticamente após 30 dias.
 
@@ -265,4 +276,4 @@ Funciona em qualquer navegador moderno com suporte a ES6+, `localStorage` e `Blo
 
 ## Responsável
 
-Desenvolvido por **Mayara Almeida**
+Desenvolvido por **Mayara Almeida** 
